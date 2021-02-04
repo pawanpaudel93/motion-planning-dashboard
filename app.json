@@ -1,0 +1,41 @@
+{
+    "name": "djavue-template",
+    "description": "Django+VueJS template",
+    "repository": "https://github.com/pawanpaudel93/djavue-template",
+    "logo": "https://raw.githubusercontent.com/pawanpaudel93/djavue-template/master/static/djavue.jpg",
+    "keywords": ["django", "vuejs", "django webpack loader", "vuex", "axios", "DRF"],
+    "addons": [
+        {
+          "plan": "heroku-postgresql",
+          "options": {
+            "version": "12"
+          }
+        }
+    ],
+    "buildpacks": [
+        {
+          "url": "heroku/python"
+        },
+        {
+          "url": "heroku/nodejs"
+        }
+      ],
+    "env": {
+        "DJANGO_SECRET_KEY": {
+            "description": "Django Secret key",
+            "generator": "secret"
+        },
+        "DJANGO_DEBUG": {
+            "description": "Django Debug must be False for production",
+            "value": "False"
+        },
+        "ALLOWED_HOSTS": {
+            "description": "List of allowed hosts",
+           "value": ".herokuapp.com"
+        },
+        "VUE_APP_BASEURL": {
+            "description": "Base Heroku app URL. It should similar to djavue-template.herokuapp.com but for your website url",
+            "value": ".herokuapp.com"
+        }
+    }
+  }
