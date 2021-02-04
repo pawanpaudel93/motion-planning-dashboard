@@ -1,9 +1,10 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
+from django.utils.translation import gettext_lazy as _
 
 
 class Session(models.Model):
-    target_altitude = models.IntegerField("Taeget Altitide")
+    target_altitude = models.IntegerField("Target Altitide")
 
 
 class BaseModel(models.Model):
