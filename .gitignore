@@ -152,3 +152,4 @@ yarn-error.log*
 *.sw*
 **/migrations/**
 webpack-stats.json
+models.ipynb

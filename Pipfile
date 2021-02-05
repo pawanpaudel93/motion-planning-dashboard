@@ -5,6 +5,8 @@ verify_ssl = true
 
 [dev-packages]
 pylint = "*"
+jupyter = "*"
+django-extensions = "*"
 
 [packages]
 asgiref = "==3.2.7"

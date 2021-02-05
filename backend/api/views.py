@@ -1,16 +1,23 @@
-from django.views.generic import TemplateView
-from rest_framework.viewsets import ViewSet
-from rest_framework.response import Response
-from django.shortcuts import get_object_or_404
-from rest_framework.viewsets import ModelViewSet
 from django.contrib.staticfiles.storage import staticfiles_storage
+from rest_framework.viewsets import ViewSet, ModelViewSet
+from django.views.generic import TemplateView
+from rest_framework.response import Response
+from django.shortcuts import _get_queryset
+from rest_framework.views import APIView
+from django.http import Http404
 from bresenham import bresenham
 from scipy.spatial import Voronoi
 import numpy as np
-from queue import PriorityQueue
 
 from .serializers import *
 from .models import *
+
+def get_latest_object_or_404(klass, *args, **kwargs):
+    queryset = _get_queryset(klass)
+    try:
+        return queryset.filter(*args, **kwargs).latest()
+    except queryset.model.DoesNotExist:
+        raise Http404('No %s matches the given query.' % queryset.model._meta.object_name)
 
 
 def get_data():
@@ -44,14 +51,10 @@ def create_grid_and_edges(data, drone_altitude, safety_distance):
         north, east, alt, d_north, d_east, d_alt = data[i, :]
         if alt + d_alt + safety_distance > drone_altitude:
             obstacle = [
-                int(np.clip(north - d_north - safety_distance -
-                            north_min, 0, north_size - 1)),
-                int(np.clip(north + d_north + safety_distance -
-                            north_min, 0, north_size - 1)),
-                int(np.clip(east - d_east - safety_distance -
-                            east_min, 0, east_size - 1)),
-                int(np.clip(east + d_east + safety_distance -
-                            east_min, 0, east_size - 1)),
+                int(np.clip(north - d_north - safety_distance - north_min, 0, north_size - 1)),
+                int(np.clip(north + d_north + safety_distance - north_min, 0, north_size - 1)),
+                int(np.clip(east - d_east - safety_distance - east_min, 0, east_size - 1)),
+                int(np.clip(east + d_east + safety_distance - east_min, 0, east_size - 1)),
             ]
             grid[obstacle[0]:obstacle[1] + 1, obstacle[2]:obstacle[3] + 1] = 1
             # add center of obstacles to points list
@@ -103,62 +106,65 @@ class SessionViewSet(ViewSet):
         return Response({'grid': grid, 'edges': edges})
 
 class MovementViewSet(ViewSet):
-    def list(self, request, session_id):
-        queryset = Movement.objects.filter(session=session_id)
+    def list(self, request, pk=None):
+        queryset = Movement.objects.filter(session=pk)
         serializer = MovementSerializer(queryset, many=True)
         return Response(serializer.data)
     
-    def retrieve(self, request, session_id):
-        movement = Movement.objects.filter(session=session_id).latest()
+    def retrieve(self, request, pk=None):
+        movement = get_latest_object_or_404(Movement, session=pk)
         serializer = MovementSerializer(movement)
         return Response(serializer.data)
     
 
 class GlobalPositionViewSet(ViewSet):
-    def list(self, request, session_id):
-        queryset = GlobalPosition.objects.filter(session=session_id)
+    def list(self, request, pk=None):
+        queryset = GlobalPosition.objects.filter(session=pk)
         serializer = GlobalPositionSerializer(queryset, many=True)
         return Response(serializer.data)
 
-    def retrieve(self, request, session_id):
-        position = GlobalPosition.objects.filter(session=session_id).latest()
+    def retrieve(self, request, pk=None):
+        position = get_latest_object_or_404(GlobalPosition, session=pk)
         serializer = GlobalPositionSerializer(position)
         return Response(serializer.data)
 
 
 class GlobalHomeViewSet(ViewSet):
-    def list(self, request, session_id):
-        queryset = GlobalHome.objects.filter(session=session_id)
+    def list(self, request, pk=None):
+        queryset = GlobalHome.objects.filter(session=pk)
         serializer = GlobalHome(queryset, many=True)
         return Response(serializer.data)
 
-    def retrieve(self, request, session_id):
-        position = GlobalHome.objects.filter(session=session_id).latest()
+    def retrieve(self, request, pk=None):
+        position = get_latest_object_or_404(GlobalHome, session=pk)
         serializer = MovementSerializer(position)
         return Response(serializer.data)
 
 
 class LocalPositionViewSet(ViewSet):
-    def list(self, request, session_id):
-        queryset = LocalPosition.objects.filter(session=session_id)
+    def list(self, request, pk=None):
+        queryset = LocalPosition.objects.filter(session=pk)
         serializer = LocalPositionSerializer(queryset, many=True)
         return Response(serializer.data)
 
-    def retrieve(self, request, session_id):
-        position = LocalPosition.objects.filter(session=session_id).latest()
+    def retrieve(self, request, pk=None):
+        position = get_latest_object_or_404(LocalPosition, session=pk)
         serializer = LocalPositionSerializer(position)
         return Response(serializer.data)
 
 
-class LocalVelocity(ViewSet):
-    def list(self, request, session_id):
-        queryset = LocalVelocity.objects.filter(session=session_id)
+class LocalVelocityViewSet(ViewSet):
+    def list(self, request, pk=None):
+        queryset = LocalVelocity.objects.filter(session=pk)
         serializer = LocalVelocitySerializer(queryset, many=True)
         return Response(serializer.data)
 
-    def retrieve(self, request, session_id):
-        velocity = LocalVelocity.objects.filter(session=session_id).latest()
+    def retrieve(self, request, pk=None):
+        velocity = get_latest_object_or_404(LocalVelocity, session=pk)
         serializer = LocalVelocitySerializer(velocity)
         return Response(serializer.data)
 
-# get all movement, velocity, position in a single query
+
+class SimulationData(APIView):
+    def get(self, request, pk=None):
+        pass

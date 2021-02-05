@@ -6,18 +6,30 @@ from django.utils.translation import gettext_lazy as _
 class Session(models.Model):
     target_altitude = models.IntegerField("Target Altitude")
 
+    class Meta:
+        verbose_name = _('Session')
+        verbose_name_plural = _('Sessions')
+        db_table = "session"
+
 
 class BaseModel(models.Model):
     session = models.ForeignKey(Session, on_delete=models.CASCADE)
     value = ArrayField(models.FloatField())
 
     class Meta:
+        get_latest_by = 'id'
         abstract = True
 
 
 class Movement(models.Model):
     session = models.ForeignKey(Session, on_delete=models.CASCADE)
     value = ArrayField(models.IntegerField())
+
+    class Meta:
+        verbose_name = _("Movement")
+        verbose_name_plural = _("Movements")
+        get_latest_by = 'id'
+        db_table = "movement"
 
 
 class GlobalPosition(BaseModel):
