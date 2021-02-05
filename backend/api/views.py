@@ -126,10 +126,6 @@ class GlobalPositionViewSet(ViewSet):
     def retrieve(self, request, pk=None):
         position = get_latest_object_or_404(GlobalPosition, session=pk)
         serializer = GlobalPositionSerializer(position)
-        return Response(serializer.data)
-
-
-class GlobalHomeViewSet(ViewSet):
     def list(self, request, pk=None):
         queryset = GlobalHome.objects.filter(session=pk)
         serializer = GlobalHome(queryset, many=True)
@@ -140,13 +136,8 @@ class GlobalHomeViewSet(ViewSet):
         serializer = MovementSerializer(position)
         return Response(serializer.data)
 
-
 class LocalPositionViewSet(ViewSet):
     def list(self, request, pk=None):
-        queryset = LocalPosition.objects.filter(session=pk)
-        serializer = LocalPositionSerializer(queryset, many=True)
-        return Response(serializer.data)
-
     def retrieve(self, request, pk=None):
         position = get_latest_object_or_404(LocalPosition, session=pk)
         serializer = LocalPositionSerializer(position)
