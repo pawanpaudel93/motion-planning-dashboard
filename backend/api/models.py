@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 
 
 class Session(models.Model):
-    target_altitude = models.IntegerField("Target Altitide")
+    target_altitude = models.IntegerField("Target Altitude")
 
 
 class BaseModel(models.Model):
