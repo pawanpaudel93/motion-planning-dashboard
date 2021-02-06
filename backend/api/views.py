@@ -113,6 +113,11 @@ class GlobalPositionViewSet(ViewSet):
     queryset = GlobalPosition.objects.all()
     serializer_class = GlobalPositionSerializer
 
+
+class GlobalHomeViewSet(ViewSet):
+    queryset = GlobalHome.objects.all()
+    serializer_class = GlobalHomeSerializer
+
 class LocalPositionViewSet(ViewSet):
     queryset = LocalPosition.objects.all()
     serializer_class = LocalPositionSerializer
@@ -128,7 +133,7 @@ class SimulationData(APIView):
         )
         session = get_object_or_404(session, pk=pk)
         movement = MovementSerializer(session.movement_set.all(), many=True)
-        global_home = GobalHomeSerializer(session.globalhome_set.all(), many=True)
+        global_home = GlobalHomeSerializer(session.globalhome_set.all(), many=True)
         global_position = GlobalPositionSerializer(session.globalposition_set.all(), many=True)
         local_position = LocalPositionSerializer(session.localposition_set.all(), many=True)
         local_velocity = LocalVelocitySerializer(session.localvelocity_set.all(), many=True)

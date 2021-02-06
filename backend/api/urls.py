@@ -3,7 +3,7 @@ from .views import (
     SessionViewSet, SessionModelViewSet,
     MovementViewSet, GlobalPositionViewSet,
     GlobalHomeViewSet, LocalPositionViewSet, 
-    LocalVelocityViewSet
+    LocalVelocityViewSet, SimulationData
 )
 
 from rest_framework.routers import DefaultRouter
@@ -19,4 +19,5 @@ router.register(r'lvelocities', LocalVelocityViewSet, basename='lvelocities')
 
 urlpatterns = [
     re_path(r'^', include(router.urls)),
+    path("session-data/<int:pk>" , SimulationData.as_view(), name="session-data")
 ]

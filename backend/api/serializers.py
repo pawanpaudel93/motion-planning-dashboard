@@ -20,7 +20,7 @@ class GlobalPositionSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class GobalHomeSerializer(serializers.ModelSerializer):
+class GlobalHomeSerializer(serializers.ModelSerializer):
     class Meta:
         model = GlobalHome
         fields = "__all__"

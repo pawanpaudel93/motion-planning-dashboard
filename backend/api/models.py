@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 
 class Session(models.Model):
     target_altitude = models.IntegerField("Target Altitude")
-
+    created_at = models.DateTimeField(auto_now_add=True)
     class Meta:
         verbose_name = _('Session')
         verbose_name_plural = _('Sessions')
