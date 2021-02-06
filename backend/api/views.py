@@ -2,7 +2,7 @@ from django.contrib.staticfiles.storage import staticfiles_storage
 from rest_framework.viewsets import ViewSet, ModelViewSet
 from django.views.generic import TemplateView
 from rest_framework.response import Response
-from django.shortcuts import _get_queryset
+from django.shortcuts import _get_queryset, get_object_or_404
 from rest_framework.views import APIView
 from django.http import Http404
 from bresenham import bresenham
@@ -105,57 +105,39 @@ class SessionViewSet(ViewSet):
         grid, edges = create_grid_and_edges(map_data, target_altitude, 5)
         return Response({'grid': grid, 'edges': edges})
 
-class MovementViewSet(ViewSet):
-    def list(self, request, pk=None):
-        queryset = Movement.objects.filter(session=pk)
-        serializer = MovementSerializer(queryset, many=True)
-        return Response(serializer.data)
+class MovementViewSet(ModelViewSet):
+    queryset = Movement.objects.all()
+    serializer_class = MovementSerializer
     
-    def retrieve(self, request, pk=None):
-        movement = get_latest_object_or_404(Movement, session=pk)
-        serializer = MovementSerializer(movement)
-        return Response(serializer.data)
-    
-
 class GlobalPositionViewSet(ViewSet):
-    def list(self, request, pk=None):
-        queryset = GlobalPosition.objects.filter(session=pk)
-        serializer = GlobalPositionSerializer(queryset, many=True)
-        return Response(serializer.data)
-
-    def retrieve(self, request, pk=None):
-        position = get_latest_object_or_404(GlobalPosition, session=pk)
-        serializer = GlobalPositionSerializer(position)
-    def list(self, request, pk=None):
-        queryset = GlobalHome.objects.filter(session=pk)
-        serializer = GlobalHome(queryset, many=True)
-        return Response(serializer.data)
-
-    def retrieve(self, request, pk=None):
-        position = get_latest_object_or_404(GlobalHome, session=pk)
-        serializer = MovementSerializer(position)
-        return Response(serializer.data)
+    queryset = GlobalPosition.objects.all()
+    serializer_class = GlobalPositionSerializer
 
 class LocalPositionViewSet(ViewSet):
-    def list(self, request, pk=None):
-    def retrieve(self, request, pk=None):
-        position = get_latest_object_or_404(LocalPosition, session=pk)
-        serializer = LocalPositionSerializer(position)
-        return Response(serializer.data)
-
+    queryset = LocalPosition.objects.all()
+    serializer_class = LocalPositionSerializer
 
 class LocalVelocityViewSet(ViewSet):
-    def list(self, request, pk=None):
-        queryset = LocalVelocity.objects.filter(session=pk)
-        serializer = LocalVelocitySerializer(queryset, many=True)
-        return Response(serializer.data)
-
-    def retrieve(self, request, pk=None):
-        velocity = get_latest_object_or_404(LocalVelocity, session=pk)
-        serializer = LocalVelocitySerializer(velocity)
-        return Response(serializer.data)
-
+    queryset = LocalVelocity.objects.all()
+    serializer_class = LocalVelocitySerializer
 
 class SimulationData(APIView):
     def get(self, request, pk=None):
-        pass
+        session = Session.objects.prefetch_related(
+            'movement_set', 'globalposition_set', 'globalhome_set', 'localposition_set', 'localvelocity_set'
+        )
+        session = get_object_or_404(session, pk=pk)
+        movement = MovementSerializer(session.movement_set.all(), many=True)
+        global_home = GobalHomeSerializer(session.globalhome_set.all(), many=True)
+        global_position = GlobalPositionSerializer(session.globalposition_set.all(), many=True)
+        local_position = LocalPositionSerializer(session.localposition_set.all(), many=True)
+        local_velocity = LocalVelocitySerializer(session.localvelocity_set.all(), many=True)
+        response = {
+            'movement': movement,
+            'globalPosition': global_position,
+            'globalHome': global_home,
+            'localPosition': local_position,
+            'local_velocity': local_velocity
+        }
+        return Response(response)
+
