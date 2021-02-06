@@ -6,11 +6,13 @@ The `urlpatterns` list routes URLs to views. For more information please see:
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
-from .api import urls as api_urls 
+from .api import urls as api_urls
+from .api.views import index_view
 
 router = routers.DefaultRouter()
 
 urlpatterns = [
     path('api/v1/', include(api_urls)),
     path('admin/', admin.site.urls),
+    path('', index_view, name='index'),
 ]

@@ -2,6 +2,7 @@ from django.contrib.staticfiles.storage import staticfiles_storage
 from rest_framework.viewsets import ViewSet, ModelViewSet
 from django.views.generic import TemplateView
 from rest_framework.response import Response
+from django.views.decorators.cache import never_cache
 from django.shortcuts import _get_queryset, get_object_or_404
 from rest_framework.views import APIView
 from django.http import Http404
@@ -11,6 +12,8 @@ import numpy as np
 
 from .serializers import *
 from .models import *
+
+index_view = never_cache(TemplateView.as_view(template_name='api/index.html'))
 
 def get_latest_object_or_404(klass, *args, **kwargs):
     queryset = _get_queryset(klass)
@@ -138,11 +141,11 @@ class SimulationData(APIView):
         local_position = LocalPositionSerializer(session.localposition_set.all(), many=True)
         local_velocity = LocalVelocitySerializer(session.localvelocity_set.all(), many=True)
         response = {
-            'movement': movement,
-            'globalPosition': global_position,
-            'globalHome': global_home,
-            'localPosition': local_position,
-            'local_velocity': local_velocity
+            'movement': movement.data,
+            'globalPosition': global_position.data,
+            'globalHome': global_home.data,
+            'localPosition': local_position.data,
+            'localVelocity': local_velocity.data
         }
         return Response(response)
 

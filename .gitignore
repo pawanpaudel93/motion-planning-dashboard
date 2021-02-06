@@ -150,6 +150,5 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw*
-**/migrations/**
 webpack-stats.json
 models.ipynb
