@@ -94,24 +94,15 @@ def create_grid_and_edges(data, drone_altitude, safety_distance):
 
     return grid, edges
 
-class CustomModelViewSet(ModelViewSet):
-    def get_serializer_context(self):
-        context = super().get_serializer_context()
-        action = self.action
-
-        if action == 'list':
-            context['fields'] = ("session", "value")
-        elif action == 'create':
-            context['fields'] = ("session", "value",)
-        elif action == 'retrieve':
-            context['fields'] = ("value")
-        elif action == 'update' or action == 'partial_update':
-            context['fields'] = ("value")
-        return context
 
 class SessionModelViewSet(ModelViewSet):
     serializer_class = SessionSerializer
     queryset = Session.objects.all()
+    ordering_fields = ('id')
+    ordering = ('-id')
+
+    def get_queryset(self):
+        return Session.objects.all().order_by("-id")
 
 class SessionViewSet(ViewSet):
     def retrieve(self, request, pk=None):
@@ -123,24 +114,24 @@ class SessionViewSet(ViewSet):
         grid, edges = create_grid_and_edges(map_data, target_altitude, 5)
         return Response({'grid': grid, 'edges': edges})
 
-class MovementViewSet(CustomModelViewSet):
+class MovementViewSet(ModelViewSet):
     queryset = Movement.objects.all()
     serializer_class = MovementSerializer
 
-class GlobalPositionViewSet(CustomModelViewSet):
+class GlobalPositionViewSet(ModelViewSet):
     queryset = GlobalPosition.objects.all()
     serializer_class = GlobalPositionSerializer
 
 
-class GlobalHomeViewSet(CustomModelViewSet):
+class GlobalHomeViewSet(ModelViewSet):
     queryset = GlobalHome.objects.all()
     serializer_class = GlobalHomeSerializer
 
-class LocalPositionViewSet(CustomModelViewSet):
+class LocalPositionViewSet(ModelViewSet):
     queryset = LocalPosition.objects.all()
     serializer_class = LocalPositionSerializer
 
-class LocalVelocityViewSet(CustomModelViewSet):
+class LocalVelocityViewSet(ModelViewSet):
     queryset = LocalVelocity.objects.all()
     serializer_class = LocalVelocitySerializer
 
@@ -156,6 +147,10 @@ class SimulationData(APIView):
         local_position = session.localposition_set.values_list('value', flat=True)
         local_velocity = session.localvelocity_set.values_list('value', flat=True)
         response = {
+            'session': {
+                "start": session.start,
+                "goal": session.goal
+            },
             'movement': movement,
             'globalPosition': global_position,
             'globalHome': global_home,

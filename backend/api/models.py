@@ -5,6 +5,8 @@ from django.utils.translation import gettext_lazy as _
 
 class Session(models.Model):
     target_altitude = models.IntegerField("Target Altitude")
+    start = ArrayField(models.FloatField(), null=True)
+    goal = ArrayField(models.FloatField(), null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     class Meta:
         verbose_name = _('Session')
@@ -25,7 +27,6 @@ class Movement(BaseModel):
     class Meta:
         verbose_name = _("Movement")
         verbose_name_plural = _("Movements")
-        get_latest_by = 'id'
         db_table = "movement"
 
 

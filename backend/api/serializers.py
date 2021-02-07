@@ -11,28 +11,28 @@ class SessionSerializer(serializers.ModelSerializer):
 class MovementSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movement
-        fields = ["value"]
+        fields = "__all__"
 
 
 class GlobalPositionSerializer(serializers.ModelSerializer):
     class Meta:
         model = GlobalPosition
-        fields = ["value"]
+        fields = "__all__"
 
 
 class GlobalHomeSerializer(serializers.ModelSerializer):
     class Meta:
         model = GlobalHome
-        fields = ["value"]
+        fields = "__all__"
 
 
 class LocalPositionSerializer(serializers.ModelSerializer):
     class Meta:
         model = LocalPosition
-        fields = ["value"]
+        fields = "__all__"
 
 
 class LocalVelocitySerializer(serializers.ModelSerializer):
     class Meta:
         model = LocalVelocity
-        fields = ["value"]
+        fields = "__all__"
