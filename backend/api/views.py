@@ -93,7 +93,22 @@ def create_grid_and_edges(data, drone_altitude, safety_distance):
             edges.append((p1, p2))
 
     return grid, edges
-    
+
+class CustomModelViewSet(ModelViewSet):
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        action = self.action
+
+        if action == 'list':
+            context['fields'] = ("session", "value")
+        elif action == 'create':
+            context['fields'] = ("session", "value",)
+        elif action == 'retrieve':
+            context['fields'] = ("value")
+        elif action == 'update' or action == 'partial_update':
+            context['fields'] = ("value")
+        return context
+
 class SessionModelViewSet(ModelViewSet):
     serializer_class = SessionSerializer
     queryset = Session.objects.all()
@@ -108,24 +123,24 @@ class SessionViewSet(ViewSet):
         grid, edges = create_grid_and_edges(map_data, target_altitude, 5)
         return Response({'grid': grid, 'edges': edges})
 
-class MovementViewSet(ModelViewSet):
+class MovementViewSet(CustomModelViewSet):
     queryset = Movement.objects.all()
     serializer_class = MovementSerializer
-    
-class GlobalPositionViewSet(ViewSet):
+
+class GlobalPositionViewSet(CustomModelViewSet):
     queryset = GlobalPosition.objects.all()
     serializer_class = GlobalPositionSerializer
 
 
-class GlobalHomeViewSet(ViewSet):
+class GlobalHomeViewSet(CustomModelViewSet):
     queryset = GlobalHome.objects.all()
     serializer_class = GlobalHomeSerializer
 
-class LocalPositionViewSet(ViewSet):
+class LocalPositionViewSet(CustomModelViewSet):
     queryset = LocalPosition.objects.all()
     serializer_class = LocalPositionSerializer
 
-class LocalVelocityViewSet(ViewSet):
+class LocalVelocityViewSet(CustomModelViewSet):
     queryset = LocalVelocity.objects.all()
     serializer_class = LocalVelocitySerializer
 
@@ -135,17 +150,17 @@ class SimulationData(APIView):
             'movement_set', 'globalposition_set', 'globalhome_set', 'localposition_set', 'localvelocity_set'
         )
         session = get_object_or_404(session, pk=pk)
-        movement = MovementSerializer(session.movement_set.all(), many=True)
-        global_home = GlobalHomeSerializer(session.globalhome_set.all(), many=True)
-        global_position = GlobalPositionSerializer(session.globalposition_set.all(), many=True)
-        local_position = LocalPositionSerializer(session.localposition_set.all(), many=True)
-        local_velocity = LocalVelocitySerializer(session.localvelocity_set.all(), many=True)
+        movement = session.movement_set.values_list('value', flat=True)
+        global_home = session.globalhome_set.values_list('value', flat=True)
+        global_position = session.globalposition_set.values_list('value', flat=True)
+        local_position = session.localposition_set.values_list('value', flat=True)
+        local_velocity = session.localvelocity_set.values_list('value', flat=True)
         response = {
-            'movement': movement.data,
-            'globalPosition': global_position.data,
-            'globalHome': global_home.data,
-            'localPosition': local_position.data,
-            'localVelocity': local_velocity.data
+            'movement': movement,
+            'globalPosition': global_position,
+            'globalHome': global_home,
+            'localPosition': local_position,
+            'localVelocity': local_velocity
         }
         return Response(response)
 

@@ -8,6 +8,8 @@
         >
           <v-card
             color="#952175"
+            elevation="3"
+            outlined
             dark
           >
             <div class="d-flex flex-no-wrap justify-space-between">

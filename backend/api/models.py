@@ -21,10 +21,7 @@ class BaseModel(models.Model):
         abstract = True
 
 
-class Movement(models.Model):
-    session = models.ForeignKey(Session, on_delete=models.CASCADE)
-    value = ArrayField(models.IntegerField())
-
+class Movement(BaseModel):
     class Meta:
         verbose_name = _("Movement")
         verbose_name_plural = _("Movements")
