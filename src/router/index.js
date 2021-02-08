@@ -10,6 +10,11 @@ const routes = [
     name: "Home",
     component: Home
   },
+  {
+    path: "/session/:sessionId",
+    name: "Session",
+    component: () => import("@/views/Session.vue"),
+  }
 ];
 
 const router = new VueRouter({

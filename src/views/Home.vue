@@ -23,6 +23,7 @@
 
                 <v-card-actions>
                   <v-btn
+                    :to="'/session/' + session.id"
                     class="ml-2 mt-5"
                     outlined
                     rounded
@@ -40,18 +41,42 @@
 
 <script>
   import { mapGetters } from 'vuex';
+  import axios from 'axios';
   export default {
     name: "Home",
     data: () => ({
-
+      timeoutId: null,
     }),
+    methods: {
+      setSessions() {
+        axios.get(this.$store.state.endpoints.sessions)
+        .then(res => {
+          // console.log(res);
+          this.$store.commit("SET_SESSIONS", res.data);
+          clearTimeout(this.timeoutId);
+          this.timeoutId = setTimeout(() => {
+            this.setSessions();
+          }, 5000)
+        })
+        .catch(err => {
+          // console.log(err.message);
+          clearTimeout(this.timeoutId);
+          this.timeoutId = setTimeout(() => {
+            this.setSessions();
+          }, 5000)
+        })
+      }
+    },
     computed: {
       ...mapGetters({
         sessions: 'getSessions',
       }),
     },
     created() {
-      this.$store.dispatch('setSessions');
+      this.setSessions();
+    },
+    destroyed() {
+      clearTimeout(this.timeoutId);
     }
   };
 </script>
