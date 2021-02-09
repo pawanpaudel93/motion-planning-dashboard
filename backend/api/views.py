@@ -141,11 +141,26 @@ class SimulationData(APIView):
             'movement_set', 'globalposition_set', 'globalhome_set', 'localposition_set', 'localvelocity_set'
         )
         session = get_object_or_404(session, pk=pk)
-        movement = session.movement_set.values_list('value', flat=True)
-        global_home = session.globalhome_set.values_list('value', flat=True)
-        global_position = session.globalposition_set.values_list('value', flat=True)
-        local_position = session.localposition_set.values_list('value', flat=True)
-        local_velocity = session.localvelocity_set.values_list('value', flat=True)
+        try:
+            movement = session.movement_set.values_list('value', flat=True)
+        except Movement.DoesNotExist:
+            movement = []
+        try:
+            global_home = session.globalhome_set.latest().value
+        except GlobalHome.DoesNotExist:
+            global_home = []
+        try:
+            global_position = session.globalposition_set.latest().value
+        except GlobalPosition.DoesNotExist:
+            global_position = []
+        try:
+            local_position = session.localposition_set.latest().value
+        except LocalPosition.DoesNotExist:
+            local_position = []
+        try:
+            local_velocity = session.localvelocity_set.latest().value
+        except LocalVelocity.DoesNotExist:
+            local_velocity = []
         response = {
             'session': {
                 "start": session.start,

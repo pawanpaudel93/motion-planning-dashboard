@@ -19,12 +19,12 @@ class BaseModel(models.Model):
     value = ArrayField(models.FloatField())
 
     class Meta:
-        get_latest_by = 'id'
         abstract = True
 
 
 class Movement(BaseModel):
     class Meta:
+        get_latest_by = 'id'
         verbose_name = _("Movement")
         verbose_name_plural = _("Movements")
         db_table = "movement"
@@ -32,6 +32,7 @@ class Movement(BaseModel):
 
 class GlobalPosition(BaseModel):
     class Meta:
+        get_latest_by = 'id'
         verbose_name = _("Global Position")
         verbose_name_plural = _("Global Positions")
         db_table = "global_position"
@@ -39,6 +40,7 @@ class GlobalPosition(BaseModel):
 
 class GlobalHome(BaseModel):
     class Meta:
+        get_latest_by = 'id'
         verbose_name = _("Global Home")
         verbose_name_plural = _("Global Home")
         db_table = "global_home"
@@ -46,6 +48,7 @@ class GlobalHome(BaseModel):
 
 class LocalPosition(BaseModel):
     class Meta:
+        get_latest_by = 'id'
         verbose_name = _("Local Position")
         verbose_name_plural = _("Local Positions")
         db_table = "local_position"
@@ -53,6 +56,7 @@ class LocalPosition(BaseModel):
 
 class LocalVelocity(BaseModel):
     class Meta:
+        get_latest_by = 'id'
         verbose_name = _("Local Velocity")
         verbose_name_plural = _("Local Velocities")
         db_table = "local_velocity"

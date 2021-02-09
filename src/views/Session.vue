@@ -1,47 +1,87 @@
 <template>
-  <div id='myDiv'></div>
+  <v-container>
+    <v-overlay :value="loading">
+      Loading...<br>
+      <v-progress-circular
+        :size="70"
+        :width="7"
+        color="blue"
+        indeterminate
+      ></v-progress-circular>
+    </v-overlay>
+    <v-row v-if="!loading">
+      <v-col>
+        <Plotly :data="data" :layout="layout" :display-mode-bar="true"></Plotly>
+      </v-col>
+      <v-col>
+        <v-simple-table v-if="Object.keys(sessionData).length !==0">
+          <template v-slot:default>
+            <thead>
+              <tr>
+                <th class="text-left">
+                  Name
+                </th>
+                <th class="text-left">
+                  Value
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-for="(value, key) in filteredSession"
+                :key="key"
+              >
+                <td>{{ key }}</td>
+                <td>{{ value }}</td>
+              </tr>
+            </tbody>
+          </template>
+        </v-simple-table>
+      </v-col>
+    </v-row>  
+  </v-container>
 </template>
 <script>
-  import {mapGetters} from 'vuex';
-  import Plotly from 'plotly.js-dist'
+  import { Plotly } from 'vue-plotly'
   import axios from 'axios'
   export default {
     name: "Session",
+    components: {
+      Plotly
+    },
     data: () => ({
-      mapData: {}
+      data: [],
+      layout: {},
+      sessionData: {},
+      loading: true,
+      timeoutId: null,
     }),
     computed: {
-
+      filteredSession() {
+        let notAllowed = ['session', 'movement']
+        return Object.keys(this.sessionData)
+        .filter(key => !notAllowed.includes(key))
+        .reduce((obj, key) => {
+          obj[key] = this.sessionData[key];
+          return obj;
+        }, {});
+      }
     },
     methods: {
-      setMapData() {
+      getMapData() {
         axios.get(this.$store.state.endpoints.mapData + `${this.$route.params.sessionId}/`)
           .then(res => {
             console.log(res.data)
-            this.mapData = res.data;
-            var data = [
+            let mapData = res.data;
+            this.data.push(
               {
-                z: this.mapData.grid,
+                z: mapData.grid,
                 colorscale: 'Viridis',
                 showscale: false,
                 type: 'heatmap'
               }
-            ];
-            for (let i=0; i<this.mapData.edges.length; i++) {
-              let [p1, p2] = this.mapData.edges[i]
-              data.push({
-                x: [p1[1], p2[1]],
-                y: [p1[0], p2[0]],
-                mode: "lines",
-                line: {
-                  color: "#001FFF",
-                  shape: 'spline',
-                  width: 2.5
-                },
-                type: 'scatter'
-              })
-            }
-            var layout = {
+            )
+            this.layout = {
               title: 'Session Data',
               width: 700,
               height: 700,
@@ -67,15 +107,62 @@
                 }
               }
             };
-            Plotly.newPlot('myDiv', data, layout);
+            mapData.edges.forEach((edge, index, array) => {
+              let [p1, p2] = edge;
+              this.data.push({
+                x: [p1[1], p2[1]],
+                y: [p1[0], p2[0]],
+                mode: "lines",
+                line: {
+                  color: "#001FFF",
+                  shape: 'spline',
+                  width: 2.5
+                },
+                type: 'scatter'
+              })
+            });
+            let {goal, start} = this.sessionData.session;
+            this.data.push({
+              x: [start[1], goal[1]],
+              y: [start[0], goal[0]],
+              mode: "markers",
+              marker: {
+                color: "#FF0000",
+                size: 10
+              },
+              type: 'scatter'
+            })
+            this.loading = false;
           })
           .catch(err => {
             console.log(err.message);
           })
       },
+      getSessionData() {
+        axios.get(this.$store.state.endpoints.sessionData + `${this.$route.params.sessionId}`)
+          .then(res => {
+            console.log(res.data)
+            this.sessionData = res.data;
+            clearTimeout(this.timeoutId);
+            this.timeoutId = setTimeout(() => {
+              this.getSessionData();
+            }, 5000)
+          })
+          .catch(err => {
+            console.log(err.message)
+            clearTimeout(this.timeoutId);
+            this.timeoutId = setTimeout(() => {
+              this.getSessionData();
+            }, 5000)
+          })
+      }
     },
     created() {
-      this.setMapData();
+      this.getMapData();
+      this.getSessionData();
     },
+    destroyed() {
+      clearTimeout(this.timeoutId);
+    }
   }
 </script>

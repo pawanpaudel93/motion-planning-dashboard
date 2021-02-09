@@ -1,5 +1,5 @@
 {
-  "name": "project_name",
+  "name": "PX4-AUTOPILOT",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -11,8 +11,8 @@
   "dependencies": {
     "axios": "^0.21.1",
     "core-js": "^3.6.4",
-    "plotly.js-dist": "^1.58.4",
     "vue": "^2.6.11",
+    "vue-plotly": "^1.1.0",
     "vue-router": "^3.1.6",
     "vuetify": "^2.4.0",
     "vuex": "^3.1.3"

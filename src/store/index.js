@@ -8,38 +8,23 @@ export default new Vuex.Store({
   state: {
     endpoints: {
       sessions: "/api/v1/sessions/",
-      mapData: "/api/v1/session/"
+      mapData: "/api/v1/session/",
+      sessionData: "/api/v1/session-data/"
     },
     sessions: [],
-    mapData: {}
   },
   mutations: {
     'SET_SESSIONS'(state, sessions) {
       state.sessions = sessions;
     },
-    'SET_MAP_DATA'(state, mapData) {
-      state.mapData = mapData;
-    }
   },
   actions: {
-    setMapData({state, commit}, sessionId) {
-      axios.get(state.endpoints.mapData + `${sessionId}/`)
-        .then(res => {
-          console.log(res.data);
-          commit("SET_MAP_DATA")
-        })
-        .catch(err => {
-          console.log(err.message);
-        })
-    },
+    
   },
   getters: {
     getSessions(state) {
       return state.sessions;
     },
-    getMapData(state) {
-      return state.mapData;
-    }
   },
   modules: {}
 });
