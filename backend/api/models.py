@@ -7,6 +7,7 @@ class Session(models.Model):
     target_altitude = models.IntegerField("Target Altitude")
     start = ArrayField(models.FloatField(), null=True)
     goal = ArrayField(models.FloatField(), null=True)
+    is_finished = models.BooleanField("Is Finished", default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     class Meta:
         verbose_name = _('Session')

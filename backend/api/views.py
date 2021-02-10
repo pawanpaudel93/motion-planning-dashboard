@@ -163,6 +163,7 @@ class SimulationData(APIView):
             local_velocity = []
         response = {
             'session': {
+                "isFinished": session.is_finished,
                 "start": session.start,
                 "goal": session.goal
             },

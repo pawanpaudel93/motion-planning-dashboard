@@ -17,7 +17,8 @@
                 <v-card-title
                   class="headline"
                   v-text="'Session '+ session.id"
-                ></v-card-title>
+                >
+                </v-card-title>
 
                 <v-card-subtitle v-text="Date(session.created_at)"></v-card-subtitle>
 
@@ -30,6 +31,8 @@
                   >
                     VIEW
                   </v-btn>
+                  <v-spacer></v-spacer>
+                  <v-btn text @click="deleteSession(session.id)"><v-icon>mdi-delete</v-icon></v-btn>
                 </v-card-actions>
               </div>
             </div>
@@ -65,6 +68,15 @@
             this.setSessions();
           }, 5000)
         })
+      },
+      deleteSession(sessionId) {
+        axios.delete(this.$store.state.endpoints.sessions + `${sessionId}/`)
+          .then(res => {
+            console.log(res.message)
+          })
+          .catch(err => {
+            console.log(err.message)
+          })
       }
     },
     computed: {

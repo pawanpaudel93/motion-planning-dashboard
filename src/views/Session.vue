@@ -55,6 +55,7 @@
       sessionData: {},
       loading: true,
       timeoutId: null,
+      displayed: false
     }),
     computed: {
       filteredSession() {
@@ -107,7 +108,7 @@
                 }
               }
             };
-            mapData.edges.forEach((edge, index, array) => {
+            mapData.edges.forEach((edge) => {
               let [p1, p2] = edge;
               this.data.push({
                 x: [p1[1], p2[1]],
@@ -121,18 +122,8 @@
                 type: 'scatter'
               })
             });
-            let {goal, start} = this.sessionData.session;
-            this.data.push({
-              x: [start[1], goal[1]],
-              y: [start[0], goal[0]],
-              mode: "markers",
-              marker: {
-                color: "#FF0000",
-                size: 10
-              },
-              type: 'scatter'
-            })
             this.loading = false;
+            this.getSessionData();
           })
           .catch(err => {
             console.log(err.message);
@@ -143,10 +134,72 @@
           .then(res => {
             console.log(res.data)
             this.sessionData = res.data;
-            clearTimeout(this.timeoutId);
-            this.timeoutId = setTimeout(() => {
-              this.getSessionData();
-            }, 5000)
+            if (!this.loading && !this.displayed && this.sessionData.session.start != null) {
+              let {goal, start} = this.sessionData.session;
+              this.data.push({
+                x: [start[1]],
+                y: [start[0]],
+                mode: "markers",
+                marker: {
+                  color: "#FF0000",
+                  size: 10,
+                },
+                type: 'scatter'
+              })
+              this.data.push({
+                x: [goal[1]],
+                y: [goal[0]],
+                mode: "markers",
+                marker: {
+                  color: "#FF0000",
+                  size: 10,
+                  symbol: 'x'
+                },
+                type: 'scatter'
+              })
+              this.displayed = true;
+            }
+            let movementLength = this.sessionData.movement.length;
+            if (movementLength != 0) {
+              if (this.sessionData.session.isFinished) {
+                let xAxis = [],
+                    yAxis = [];
+                this.sessionData.movement.forEach((item) => {
+                  xAxis.push(item[1]);
+                  yAxis.push(item[0]);
+                })
+                this.data.push({
+                  x: xAxis,
+                  y: yAxis,
+                  mode: "lines",
+                  line: {
+                    color: "#00FF00",
+                    shape: 'spline',
+                    width: 2.5
+                  },
+                  type: 'scatter'
+                })
+              } else {
+                let point = this.sessionData.movement[movementLength-1]
+                this.data.push({
+                  x: [point[1]],
+                  y: [point[0]],
+                  mode: "markers",
+                  marker: {
+                    color: "#00FF00",
+                    size: 7,
+                    symbol: 'star-diamond'
+                  },
+                  type: 'scatter'
+                })
+              }
+            }
+            if (!this.sessionData.session.isFinished) {
+              clearTimeout(this.timeoutId);
+              this.timeoutId = setTimeout(() => {
+                this.getSessionData();
+              }, 5000)
+            }
           })
           .catch(err => {
             console.log(err.message)
@@ -159,7 +212,6 @@
     },
     created() {
       this.getMapData();
-      this.getSessionData();
     },
     destroyed() {
       clearTimeout(this.timeoutId);

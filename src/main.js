@@ -7,6 +7,8 @@ import vuetify from "./plugins/vuetify";
 
 Vue.config.productionTip = false;
 // axios.defaults.baseURL = process.env.VUE_APP_BASEURL;
+axios.defaults.xsrfCookieName = 'csrftoken'
+axios.defaults.xsrfHeaderName = 'X-CSRFToken'
 
 new Vue({
   router,
