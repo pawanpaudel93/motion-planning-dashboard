@@ -11,7 +11,7 @@
     </v-overlay>
     <v-row v-if="!loading">
       <v-col>
-        <Plotly :data="data" :layout="layout" :display-mode-bar="true"></Plotly>
+        <Plotly :data="data.concat(movement)" :layout="layout" :display-mode-bar="true"></Plotly>
       </v-col>
       <v-col>
         <v-simple-table v-if="Object.keys(sessionData).length !==0">
@@ -53,6 +53,7 @@
       data: [],
       layout: {},
       sessionData: {},
+      movement: [],
       loading: true,
       timeoutId: null,
       displayed: false
@@ -168,20 +169,15 @@
                   xAxis.push(item[1]);
                   yAxis.push(item[0]);
                 })
-                this.data.push({
+                this.movement = [{
                   x: xAxis,
                   y: yAxis,
-                  mode: "lines",
-                  line: {
-                    color: "#00FF00",
-                    shape: 'spline',
-                    width: 2.5
-                  },
+                  mode: "lines+markers",
                   type: 'scatter'
-                })
+                }]
               } else {
                 let point = this.sessionData.movement[movementLength-1]
-                this.data.push({
+                this.movement.push({
                   x: [point[1]],
                   y: [point[0]],
                   mode: "markers",
