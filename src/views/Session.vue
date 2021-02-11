@@ -172,8 +172,13 @@
                 this.movement = [{
                   x: xAxis,
                   y: yAxis,
-                  mode: "lines+markers",
+                  mode: "markers",
                   type: 'scatter',
+                  marker: {
+                    color: "#00FF00",
+                    size: 7,
+                    symbol: 'star-diamond'
+                  },
                 }]
               } else {
                 let point = this.sessionData.movement[movementLength-1]
@@ -181,12 +186,12 @@
                   x: [point[1]],
                   y: [point[0]],
                   mode: "markers",
+                  type: 'scatter',
                   marker: {
                     color: "#00FF00",
                     size: 7,
                     symbol: 'star-diamond'
                   },
-                  type: 'scatter'
                 })
               }
             }
