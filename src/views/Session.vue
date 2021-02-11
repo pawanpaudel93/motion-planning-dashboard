@@ -32,7 +32,7 @@
                 :key="key"
               >
                 <td>{{ key }}</td>
-                <td>{{ value }}</td>
+                <td :inner-html.prop="value|displayValue(key)"></td>
               </tr>
             </tbody>
           </template>
@@ -51,9 +51,9 @@
     },
     data: () => ({
       data: [],
+      movement: [],
       layout: {},
       sessionData: {},
-      movement: [],
       loading: true,
       timeoutId: null,
       displayed: false
@@ -75,6 +75,7 @@
           .then(res => {
             console.log(res.data)
             let mapData = res.data;
+            this.loading = false;
             this.data.push(
               {
                 z: mapData.grid,
@@ -123,7 +124,6 @@
                 type: 'scatter'
               })
             });
-            this.loading = false;
             this.getSessionData();
           })
           .catch(err => {
@@ -204,6 +204,17 @@
               this.getSessionData();
             }, 5000)
           })
+      }
+    },
+    filters: {
+      displayValue: function (value, type) {
+        if (type.includes('global')) {
+          return `Longitude: ${value[0]} <br>Latitude: ${value[1]}<br> Altitude: ${value[2]}`
+        } else if (type == 'localPosition') {
+          return `North: ${value[0]}<br> East: ${value[1]}<br> Down: ${value[2]}`
+        } else {
+          return `VNorth: ${value[0]}<br> VEast: ${value[1]}<br> VDown: ${value[2]}`
+        }
       }
     },
     created() {

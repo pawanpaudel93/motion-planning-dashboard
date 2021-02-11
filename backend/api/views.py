@@ -8,6 +8,7 @@ from django.http import Http404
 from bresenham import bresenham
 from scipy.spatial import Voronoi
 from django.conf import settings
+import asyncio
 import time
 import numpy as np
 
@@ -22,6 +23,90 @@ def get_latest_object_or_404(klass, *args, **kwargs):
         return queryset.filter(*args, **kwargs).latest()
     except queryset.model.DoesNotExist:
         raise Http404('No %s matches the given query.' % queryset.model._meta.object_name)
+
+
+def __run_until_completed(coros):
+    futures = [asyncio.ensure_future(c) for c in coros]
+
+    async def first_to_finish():
+        while True:
+            await asyncio.sleep(0)
+            for f in futures:
+                if f.done():
+                    futures.remove(f)
+                    return f.result()
+
+    while len(futures) > 0:
+        yield first_to_finish()
+
+async def run_until_completed(tasks):
+    for res in __run_until_completed(tasks):
+        _ = await res
+
+def get_event_loop():
+    try:
+        loop = asyncio.get_event_loop()
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+    return loop
+
+def wait_for_event_loop(loop):
+    loop.run_until_complete(asyncio.sleep(0))
+    while loop.is_running():
+        time.sleep(0.3)
+        if not loop.is_running():
+            loop.close()
+            break
+
+
+def generate_obstacles(grid, data, safety_distance, drone_altitude, north_min, north_size, east_min, east_size):
+    points = []
+    async def generate(i):
+        north, east, alt, d_north, d_east, d_alt = data[i, :]
+        if alt + d_alt + safety_distance > drone_altitude:
+            obstacle = [
+                int(np.clip(north - d_north - safety_distance - north_min, 0, north_size - 1)),
+                int(np.clip(north + d_north + safety_distance - north_min, 0, north_size - 1)),
+                int(np.clip(east - d_east - safety_distance - east_min, 0, east_size - 1)),
+                int(np.clip(east + d_east + safety_distance - east_min, 0, east_size - 1)),
+            ]
+            grid[obstacle[0]:obstacle[1] + 1, obstacle[2]:obstacle[3] + 1] = 1
+            # add center of obstacles to points list
+            points.append([north - north_min, east - east_min])
+    loop = get_event_loop()
+    coros = (generate(i) for i in range(data.shape[0]))
+    loop.run_until_complete(run_until_completed(coros))
+    wait_for_event_loop(loop)
+    return grid, points
+
+def generate_edges(grid, graph):
+    edges = []
+    async def generate(v):
+        p1 = graph.vertices[v[0]]
+        p2 = graph.vertices[v[1]]
+        cells = list(bresenham(int(p1[0]), int(p1[1]), int(p2[0]), int(p2[1])))
+        hit = False
+
+        for c in cells:
+            # First check if we're off the map
+            if np.amin(c) < 0 or c[0] >= grid.shape[0] or c[1] >= grid.shape[1] or grid[c[0], c[1]] == 1:
+                hit = True
+                break
+
+        # If the edge does not hit on obstacle
+        # add it to the list
+        if not hit:
+            # array to tuple for future graph creation step)
+            p1 = (p1[0], p1[1])
+            p2 = (p2[0], p2[1])
+            edges.append((p1, p2))
+
+    loop = get_event_loop()
+    coros = (generate(v) for v in graph.ridge_vertices)
+    loop.run_until_complete(run_until_completed(coros))
+    wait_for_event_loop(loop)
+    return edges
 
 
 def create_grid_and_edges(data, drone_altitude, safety_distance):
@@ -43,51 +128,12 @@ def create_grid_and_edges(data, drone_altitude, safety_distance):
     # Initialize an empty grid
     grid = np.zeros((north_size, east_size))
     # Initialize an empty list for Voronoi points
-    points = []
-
-    # Populate the grid with obstacles
-    for i in range(data.shape[0]):
-        north, east, alt, d_north, d_east, d_alt = data[i, :]
-        if alt + d_alt + safety_distance > drone_altitude:
-            obstacle = [
-                int(np.clip(north - d_north - safety_distance - north_min, 0, north_size - 1)),
-                int(np.clip(north + d_north + safety_distance - north_min, 0, north_size - 1)),
-                int(np.clip(east - d_east - safety_distance - east_min, 0, east_size - 1)),
-                int(np.clip(east + d_east + safety_distance - east_min, 0, east_size - 1)),
-            ]
-            grid[obstacle[0]:obstacle[1] + 1, obstacle[2]:obstacle[3] + 1] = 1
-            # add center of obstacles to points list
-            points.append([north - north_min, east - east_min])
-
+    
+    grid, points = generate_obstacles(grid, data, safety_distance, drone_altitude, north_min, north_size, east_min, east_size)
     # create a voronoi graph based on location of obstacle centres
     graph = Voronoi(points)
-
     # check each edge from graph.ridge_vertices for collision
-    edges = []
-    for v in graph.ridge_vertices:
-        p1 = graph.vertices[v[0]]
-        p2 = graph.vertices[v[1]]
-        cells = list(bresenham(int(p1[0]), int(p1[1]), int(p2[0]), int(p2[1])))
-        hit = False
-
-        for c in cells:
-            # First check if we're off the map
-            if np.amin(c) < 0 or c[0] >= grid.shape[0] or c[1] >= grid.shape[1]:
-                hit = True
-                break
-            # Next check if we're in collision
-            if grid[c[0], c[1]] == 1:
-                hit = True
-                break
-
-        # If the edge does not hit on obstacle
-        # add it to the list
-        if not hit:
-            # array to tuple for future graph creation step)
-            p1 = (p1[0], p1[1])
-            p2 = (p2[0], p2[1])
-            edges.append((p1, p2))
-
+    edges = generate_edges(grid, graph)
     return grid, edges
 
 
