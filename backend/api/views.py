@@ -1,4 +1,3 @@
-from django.contrib.staticfiles.storage import staticfiles_storage
 from rest_framework.viewsets import ViewSet, ModelViewSet
 from django.views.generic import TemplateView
 from rest_framework.response import Response
@@ -8,6 +7,8 @@ from rest_framework.views import APIView
 from django.http import Http404
 from bresenham import bresenham
 from scipy.spatial import Voronoi
+from django.conf import settings
+import time
 import numpy as np
 
 from .serializers import *
@@ -23,14 +24,9 @@ def get_latest_object_or_404(klass, *args, **kwargs):
         raise Http404('No %s matches the given query.' % queryset.model._meta.object_name)
 
 
-def get_data():
-    data = np.load(staticfiles_storage.path('colliders.npy'))
-    return data
-
-
 def create_grid_and_edges(data, drone_altitude, safety_distance):
     '''
-    Create a grid representation of a 2D configuration space and a Voronoi Graph
+        Create a grid representation of a 2D configuration space and a Voronoi Graph
     '''
     # minimum and maximum north coordinates
     north_min = np.floor(np.min(data[:, 0] - data[:, 3]))
@@ -110,7 +106,7 @@ class SessionViewSet(ViewSet):
         session = get_object_or_404(queryset, pk=pk)
         serializer = SessionSerializer(session)
         target_altitude = serializer.data.get('target_altitude')
-        map_data = get_data()
+        map_data = settings.MAP_DATA
         grid, edges = create_grid_and_edges(map_data, target_altitude, 5)
         return Response({'grid': grid, 'edges': edges})
 

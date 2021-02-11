@@ -173,7 +173,7 @@
                   x: xAxis,
                   y: yAxis,
                   mode: "lines+markers",
-                  type: 'scatter'
+                  type: 'scatter',
                 }]
               } else {
                 let point = this.sessionData.movement[movementLength-1]
@@ -198,7 +198,7 @@
             }
           })
           .catch(err => {
-            console.log(err.message)
+            console.log(err)
             clearTimeout(this.timeoutId);
             this.timeoutId = setTimeout(() => {
               this.getSessionData();

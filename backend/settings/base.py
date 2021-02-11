@@ -1,6 +1,7 @@
 """Base Settings"""
 
 import os
+import numpy as np
 
 SETTINGS_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_DIR = os.path.dirname(SETTINGS_DIR)
@@ -98,3 +99,5 @@ WEBPACK_LOADER = {
         "STATS_FILE": os.path.join(BASE_DIR, "webpack-stats.json"),
     }
 }
+
+MAP_DATA = np.load(os.path.join(STATIC_ROOT, 'colliders.npy'))

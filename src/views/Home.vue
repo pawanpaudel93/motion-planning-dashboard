@@ -72,7 +72,10 @@
       deleteSession(sessionId) {
         axios.delete(this.$store.state.endpoints.sessions + `${sessionId}/`)
           .then(res => {
-            console.log(res.message)
+            let id = this.sessions.map(item => item.id).indexOf(sessionId);
+						if (id != -1) {
+							this.sessions.splice(id, 1);
+						}
           })
           .catch(err => {
             console.log(err.message)
