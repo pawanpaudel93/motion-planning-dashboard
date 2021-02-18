@@ -9,7 +9,8 @@ export default new Vuex.Store({
     endpoints: {
       sessions: "/api/v1/sessions/",
       mapData: "/api/v1/session/",
-      sessionData: "/api/v1/session-data/"
+      sessionData: "/api/v1/session-data/",
+      tableData: "/api/v1/table-data/"
     },
     sessions: [],
   },

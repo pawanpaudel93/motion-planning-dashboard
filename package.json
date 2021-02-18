@@ -9,9 +9,11 @@
     "heroku-postbuild": "npm run build && python manage.py makemigrations && python manage.py migrate"
   },
   "dependencies": {
+    "apexcharts": "^3.25.0",
     "axios": "^0.21.1",
     "core-js": "^3.6.4",
     "vue": "^2.6.11",
+    "vue-apexcharts": "^1.6.0",
     "vue-plotly": "^1.1.0",
     "vue-router": "^3.1.6",
     "vuetify": "^2.4.0",
@@ -33,7 +35,7 @@
     "sass-loader": "^10.0.0",
     "vue-cli-plugin-vuetify": "~2.1.0",
     "vue-template-compiler": "^2.6.11",
-    "vuetify-loader": "^1.7.0",
+    "vuetify-loader": "^1.7.2",
     "webpack-bundle-tracker": "^0.4.3"
   },
   "eslintConfig": {

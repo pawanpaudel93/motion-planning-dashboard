@@ -14,6 +14,11 @@ const routes = [
     path: "/session/:sessionId",
     name: "Session",
     component: () => import("@/views/Session.vue"),
+  },
+  {
+    path: "/datatable/:sessionId",
+    name: "DataTable",
+    component: () => import("@/views/DataTable.vue"),
   }
 ];
 

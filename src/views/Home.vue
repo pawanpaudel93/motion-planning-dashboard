@@ -29,7 +29,15 @@
                     outlined
                     rounded
                   >
-                    VIEW
+                    LIVE
+                  </v-btn>
+                  <v-btn
+                    :to="'/datatable/' + session.id"
+                    class="ml-2 mt-5"
+                    outlined
+                    rounded
+                  >
+                    DATATABLE
                   </v-btn>
                   <v-spacer></v-spacer>
                   <v-btn text @click="deleteSession(session.id)"><v-icon>mdi-delete</v-icon></v-btn>

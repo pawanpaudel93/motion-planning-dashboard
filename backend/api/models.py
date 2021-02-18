@@ -17,6 +17,7 @@ class Session(models.Model):
 
 class BaseModel(models.Model):
     session = models.ForeignKey(Session, on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(auto_now=True)
     value = ArrayField(models.FloatField())
 
     class Meta:

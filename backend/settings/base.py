@@ -101,3 +101,7 @@ WEBPACK_LOADER = {
 }
 
 MAP_DATA = np.load(os.path.join(STATIC_ROOT, 'colliders.npy'))
+
+REST_FRAMEWORK = {
+    'DATETIME_FORMAT': '%s000',
+}

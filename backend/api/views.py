@@ -217,3 +217,38 @@ class SimulationData(APIView):
         }
         return Response(response)
 
+
+class SimulationTableData(APIView):
+    def get(self, request, pk=None):
+        session = Session.objects.prefetch_related(
+            'movement_set', 'globalposition_set', 'globalhome_set', 'localposition_set', 'localvelocity_set'
+        )
+        session = get_object_or_404(session, pk=pk)
+        try:
+            movement = session.movement_set.values_list('value', flat=True)
+        except Movement.DoesNotExist:
+            movement = []
+        try:
+            global_home = GlobalHomeSerializer(session.globalhome_set.order_by('timestamp'), many=True)
+        except GlobalHome.DoesNotExist:
+            global_home = []
+        try:
+            global_position = GlobalPositionSerializer(session.globalposition_set.order_by('timestamp'), many=True)
+        except GlobalPosition.DoesNotExist:
+            global_position = []
+        try:
+            local_position = LocalPositionSerializer(session.localposition_set.order_by('timestamp'), many=True)
+        except LocalPosition.DoesNotExist:
+            local_position = []
+        try:
+            local_velocity = LocalVelocitySerializer(session.localvelocity_set.order_by('timestamp'), many=True)
+        except LocalVelocity.DoesNotExist:
+            local_velocity = []
+        response = {
+            'movement': movement,
+            'globalPosition': global_position.data,
+            'globalHome': global_home.data,
+            'localPosition': local_position.data,
+            'localVelocity': local_velocity.data
+        }
+        return Response(response)
