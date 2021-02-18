@@ -1,31 +1,44 @@
 <template>
   <v-container>
-    <apexchart type="area" height="350" :options="getChartOptions('Local Position')" :series="seriesOne"></apexchart>
-    <apexchart type="area" height="350" :options="getChartOptions('Local Velocity')" :series="seriesTwo"></apexchart>
+    <v-card
+      elevation="3"
+      outlined
+      shaped
+      tile
+    >
+      <apexchart type="area" height="350" :options="getChartOptions('Local Position')" :series="seriesOne"></apexchart>
+    </v-card>
+    <br>
+    <v-card
+      elevation="3"
+      outlined
+      shaped
+      tile
+    >
+      <apexchart type="area" height="350" :options="getChartOptions('Local Velocity')" :series="seriesTwo"></apexchart>
+    </v-card>
     <v-list-item v-for="(data, name) in filteredData" v-bind:key="name">
       <v-list-item-content>
-        <v-list-item-title>
-          <v-card
-            elevation="2"
-            outlined
-            shaped
-            tile
+        <v-card
+          elevation="6"
+          outlined
+          shaped
+          tile
+        >
+          <v-card-title>
+            {{name[0].toUpperCase() + name.slice(1)}}
+          </v-card-title>
+          <v-data-table
+            :headers="headers(name)"
+            :items="data"
+            item-key="name"
+            class="elevation-6"
           >
-            <v-card-title>
-              {{name[0].toUpperCase() + name.slice(1)}}
-            </v-card-title>
-            <v-data-table
-              :headers="headers(name)"
-              :items="data"
-              item-key="name"
-              class="elevation-1"
-            >
-              <template v-slot:item.timestamp="{ item }">
-                <span>{{ new Date(parseInt(item.timestamp)).toGMTString() }}</span>
-              </template>
-            </v-data-table>
-          </v-card>
-        </v-list-item-title>
+            <template v-slot:item.timestamp="{ item }">
+              <span>{{ new Date(parseInt(item.timestamp)).toGMTString() }}</span>
+            </template>
+          </v-data-table>
+        </v-card>
       </v-list-item-content>
     </v-list-item>
   </v-container>
@@ -92,9 +105,15 @@
           },
           xaxis: {
             type: 'datetime',
+            labels: {
+              format: 'HH:mm:ss'
+            }
           },
           tooltip: {
             shared: false,
+            x: {
+              format: "HH:mm:ss"
+            },
           }
         }
       },
