@@ -14,25 +14,35 @@ class MovementSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class GlobalPositionSerializer(serializers.ModelSerializer):
+class DroneDataSerializer(serializers.ModelSerializer):
     class Meta:
-        model = GlobalPosition
+        model = DroneData
         fields = "__all__"
+
+
+class GlobalPositionSerializer(serializers.ModelSerializer):
+    value = serializers.ListField(read_only=True, source="global_position")
+    class Meta:
+        model = DroneData
+        fields = ['timestamp', 'value']
 
 
 class GlobalHomeSerializer(serializers.ModelSerializer):
+    value = serializers.ListField(read_only=True, source="global_home")
     class Meta:
-        model = GlobalHome
-        fields = "__all__"
+        model = DroneData
+        fields = ['timestamp', 'value']
 
 
 class LocalPositionSerializer(serializers.ModelSerializer):
+    value = serializers.ListField(read_only=True, source="local_position")
     class Meta:
-        model = LocalPosition
-        fields = "__all__"
+        model = DroneData
+        fields = ['timestamp', 'value']
 
 
 class LocalVelocitySerializer(serializers.ModelSerializer):
+    value = serializers.ListField(read_only=True, source="local_velocity")
     class Meta:
-        model = LocalVelocity
-        fields = "__all__"
+        model = DroneData
+        fields = ['timestamp', 'value']

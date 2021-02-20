@@ -17,13 +17,6 @@ from .models import *
 
 index_view = never_cache(TemplateView.as_view(template_name='api/index.html'))
 
-def get_latest_object_or_404(klass, *args, **kwargs):
-    queryset = _get_queryset(klass)
-    try:
-        return queryset.filter(*args, **kwargs).latest()
-    except queryset.model.DoesNotExist:
-        raise Http404('No %s matches the given query.' % queryset.model._meta.object_name)
-
 
 def __run_until_completed(coros):
     futures = [asyncio.ensure_future(c) for c in coros]
@@ -146,6 +139,7 @@ class SessionModelViewSet(ModelViewSet):
     def get_queryset(self):
         return Session.objects.all().order_by("-id")
 
+
 class SessionViewSet(ViewSet):
     def retrieve(self, request, pk=None):
         queryset = Session.objects.all()
@@ -156,53 +150,34 @@ class SessionViewSet(ViewSet):
         grid, edges = create_grid_and_edges(map_data, target_altitude, 5)
         return Response({'grid': grid, 'edges': edges})
 
+
 class MovementViewSet(ModelViewSet):
     queryset = Movement.objects.all()
     serializer_class = MovementSerializer
 
-class GlobalPositionViewSet(ModelViewSet):
-    queryset = GlobalPosition.objects.all()
-    serializer_class = GlobalPositionSerializer
 
+class DroneDataViewSet(ModelViewSet):
+    queryset = DroneData.objects.all()
+    serializer_class = DroneDataSerializer
 
-class GlobalHomeViewSet(ModelViewSet):
-    queryset = GlobalHome.objects.all()
-    serializer_class = GlobalHomeSerializer
-
-class LocalPositionViewSet(ModelViewSet):
-    queryset = LocalPosition.objects.all()
-    serializer_class = LocalPositionSerializer
-
-class LocalVelocityViewSet(ModelViewSet):
-    queryset = LocalVelocity.objects.all()
-    serializer_class = LocalVelocitySerializer
 
 class SimulationData(APIView):
     def get(self, request, pk=None):
-        session = Session.objects.prefetch_related(
-            'movement_set', 'globalposition_set', 'globalhome_set', 'localposition_set', 'localvelocity_set'
-        )
+        session = Session.objects.prefetch_related('movement_set', 'dronedata_set')
         session = get_object_or_404(session, pk=pk)
         try:
             movement = session.movement_set.values_list('value', flat=True)
         except Movement.DoesNotExist:
             movement = []
         try:
-            global_home = session.globalhome_set.latest().value
-        except GlobalHome.DoesNotExist:
-            global_home = []
-        try:
-            global_position = session.globalposition_set.latest().value
-        except GlobalPosition.DoesNotExist:
-            global_position = []
-        try:
-            local_position = session.localposition_set.latest().value
-        except LocalPosition.DoesNotExist:
-            local_position = []
-        try:
-            local_velocity = session.localvelocity_set.latest().value
-        except LocalVelocity.DoesNotExist:
-            local_velocity = []
+            drone_data = session.dronedata_set.latest()
+            global_home = drone_data.global_home
+            global_position = drone_data.global_position
+            local_position = drone_data.local_position
+            local_velocity = drone_data.local_velocity
+        except DroneData.DoesNotExist:
+            global_home = global_position = local_position = local_velocity = []
+        
         response = {
             'session': {
                 "isFinished": session.is_finished,
@@ -220,35 +195,26 @@ class SimulationData(APIView):
 
 class SimulationTableData(APIView):
     def get(self, request, pk=None):
-        session = Session.objects.prefetch_related(
-            'movement_set', 'globalposition_set', 'globalhome_set', 'localposition_set', 'localvelocity_set'
-        )
+        session = Session.objects.prefetch_related('movement_set', 'dronedata_set')
         session = get_object_or_404(session, pk=pk)
         try:
             movement = session.movement_set.values_list('value', flat=True)
         except Movement.DoesNotExist:
             movement = []
         try:
-            global_home = GlobalHomeSerializer(session.globalhome_set.order_by('timestamp'), many=True)
-        except GlobalHome.DoesNotExist:
-            global_home = []
-        try:
-            global_position = GlobalPositionSerializer(session.globalposition_set.order_by('timestamp'), many=True)
-        except GlobalPosition.DoesNotExist:
-            global_position = []
-        try:
-            local_position = LocalPositionSerializer(session.localposition_set.order_by('timestamp'), many=True)
-        except LocalPosition.DoesNotExist:
-            local_position = []
-        try:
-            local_velocity = LocalVelocitySerializer(session.localvelocity_set.order_by('timestamp'), many=True)
-        except LocalVelocity.DoesNotExist:
-            local_velocity = []
+            drone_data = session.dronedata_set.all().order_by('timestamp')
+            global_home = GlobalHomeSerializer(drone_data, many=True).data
+            global_position = GlobalPositionSerializer(drone_data, many=True).data
+            local_position = LocalPositionSerializer(drone_data, many=True).data
+            local_velocity = LocalVelocitySerializer(drone_data, many=True).data
+        except DroneData.DoesNotExist:
+            global_home = global_position = local_position = local_velocity = []
+
         response = {
             'movement': movement,
-            'globalPosition': global_position.data,
-            'globalHome': global_home.data,
-            'localPosition': local_position.data,
-            'localVelocity': local_velocity.data
+            'globalPosition': global_position,
+            'globalHome': global_home,
+            'localPosition': local_position,
+            'localVelocity': local_velocity
         }
         return Response(response)

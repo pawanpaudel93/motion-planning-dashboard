@@ -107,13 +107,24 @@
             type: 'datetime',
             labels: {
               format: 'HH:mm:ss'
+            },
+            tooltip: {
+              formatter: function(value, opts) {
+                let datetime = new Date(opts.w.config.series[opts.seriesIndex].data[opts.dataPointIndex].x)
+                return datetime.getUTCHours() + ":" + datetime.getUTCMinutes() + ":" +datetime.getUTCSeconds()
+              }
             }
           },
           tooltip: {
-            shared: false,
             x: {
-              format: "HH:mm:ss"
-            },
+              formatter: function(value, opts) {
+                if (typeof(opts) === 'object' && opts !== null) {
+                  return opts.w.config.series[opts.seriesIndex].data[opts.dataPointIndex].description.slice(0,2)
+                } else {
+                  return opts
+                }
+              }
+            }
           }
         }
       },
@@ -122,9 +133,22 @@
             data2 = [],
             data3 = [];
         for (let i = 0; i < this.sessionData[name].length; i++) {
-          data1.push([parseInt(this.sessionData[name][i].timestamp), this.sessionData[name][i].value[0]])
-          data2.push([parseInt(this.sessionData[name][i].timestamp), this.sessionData[name][i].value[1]])
-          data3.push([parseInt(this.sessionData[name][i].timestamp), this.sessionData[name][i].value[2]])
+          data1.push({
+            x: parseInt(this.sessionData[name][i].timestamp),
+            y: this.sessionData[name][i].value[0],
+            description: this.sessionData['globalPosition'][i].value
+          })
+          data2.push({
+            x: parseInt(this.sessionData[name][i].timestamp),
+            y: this.sessionData[name][i].value[1],
+            description: this.sessionData['globalPosition'][i].value
+          })
+          data3.push(
+            {
+              x: parseInt(this.sessionData[name][i].timestamp),
+              y: this.sessionData[name][i].value[2],
+              description: this.sessionData['globalPosition'][i].value
+          })
         }
         this[arrName] = [
           {
