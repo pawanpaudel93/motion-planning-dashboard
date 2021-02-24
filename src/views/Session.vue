@@ -11,60 +11,84 @@
     </v-overlay>
     <v-row v-if="!loading">
       <v-col>
-        <Plotly :data="data.concat(movement)" :layout="layout" :display-mode-bar="true"></Plotly>
+        <v-card
+          elevation="3"
+          outlined
+          shaped
+          tile
+        >
+          <Plotly :data="data.concat(movement)" :layout="layout" :display-mode-bar="true"></Plotly>
+        </v-card>
       </v-col>
       <v-col>
-        <v-simple-table v-if="Object.keys(sessionData).length !==0">
-          <template v-slot:default>
-            <thead>
-              <tr>
-                <th class="text-left">
-                  Name
-                </th>
-                <th class="text-left">
-                  Value
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                v-for="(value, key) in filteredSession"
-                :key="key"
-              >
-                <td>{{ key }}</td>
-                <td :inner-html.prop="value|displayValue(key)"></td>
-              </tr>
-            </tbody>
-          </template>
-        </v-simple-table>
+        <v-card
+          elevation="3"
+          outlined
+          shaped
+          tile
+          v-if="Object.keys(sessionData).length !==0"
+        >
+          <v-simple-table>
+            <template v-slot:default>
+              <thead>
+                <tr>
+                  <th class="text-left">
+                    Name
+                  </th>
+                  <th class="text-left">
+                    Value
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="(value, key) in filteredSession"
+                  :key="key"
+                >
+                  <td>{{ key }}</td>
+                  <td :inner-html.prop="value|displayValue(key)"></td>
+                </tr>
+              </tbody>
+            </template>
+          </v-simple-table>
+        </v-card>
       </v-col>
     </v-row>
-    <l-map style="height: 600px" :zoom="map.zoom" :center="map.center" v-if="isFinished">
-      <l-tile-layer :url="map.url" subdomains="map.subdomains"></l-tile-layer>
-      <l-marker :lat-lng="map.start" v-if="map.start.length > 0">
-        <l-icon
-          :icon-anchor="map.staticAnchor"
-          class-name="someExtraClass"
-        >
-          <div class="headline">
-            Start
-          </div>
-        </l-icon>
-      </l-marker>
-      <l-marker :lat-lng="map.goal" v-if="map.goal.length > 0">
-        <l-icon
-          :icon-anchor="[16, 37]"
-          class-name="someExtraClass"
-        >
-          <div class="headline">
-            Goal
-          </div>
-        </l-icon>
-      </l-marker>
-      <l-polyline :lat-lngs="map.polyline.latlngs" :color="map.polyline.color"></l-polyline>
-    </l-map>
+    <v-card
+      elevation="3"
+      outlined
+      shaped
+      tile
+      class="mt-3 mb-3"
+    >
+      <l-map style="height: 600px" :zoom="map.zoom" :center="map.center" v-if="isFinished">
+        <l-tile-layer :url="map.url" subdomains="map.subdomains"></l-tile-layer>
+        <l-marker :lat-lng="map.start" v-if="map.start.length > 0">
+          <l-icon
+            :icon-anchor="map.staticAnchor"
+            class-name="someExtraClass"
+          >
+            <div class="headline">
+              Start
+            </div>
+          </l-icon>
+        </l-marker>
+        <l-marker :lat-lng="map.goal" v-if="map.goal.length > 0">
+          <l-icon
+            :icon-anchor="[16, 37]"
+            class-name="someExtraClass"
+          >
+            <div class="headline">
+              Goal
+            </div>
+          </l-icon>
+        </l-marker>
+        <l-polyline :lat-lngs="map.polyline.latlngs" :color="map.polyline.color"></l-polyline>
+      </l-map>
+    </v-card>
   </v-container>
 </template>
+
 <script>
   import { Plotly } from 'vue-plotly'
   import axios from 'axios'
