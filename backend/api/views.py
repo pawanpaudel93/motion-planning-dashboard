@@ -161,6 +161,21 @@ class DroneDataViewSet(ModelViewSet):
     serializer_class = DroneDataSerializer
 
 
+class GlobalPositionViewSet(APIView):
+    def get(self, request, pk=None):
+        session = Session.objects.prefetch_related('dronedata_set')
+        session = get_object_or_404(session, pk=pk)
+        
+        try:
+            drone_data = session.dronedata_set.all().order_by('timestamp')
+            global_position = GlobalPositionSerializer(drone_data, many=True).data
+        except DroneData.DoesNotExist:
+            global_position = []
+        response = {
+            'globalPosition': global_position,
+        }
+        return Response(response)
+
 class SimulationData(APIView):
     def get(self, request, pk=None):
         session = Session.objects.prefetch_related('movement_set', 'dronedata_set')

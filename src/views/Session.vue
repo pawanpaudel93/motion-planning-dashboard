@@ -38,22 +38,66 @@
           </template>
         </v-simple-table>
       </v-col>
-    </v-row>  
+    </v-row>
+    <l-map style="height: 600px" :zoom="map.zoom" :center="map.center" v-if="isFinished">
+      <l-tile-layer :url="map.url" subdomains="map.subdomains"></l-tile-layer>
+      <l-marker :lat-lng="map.start" v-if="map.start.length > 0">
+        <l-icon
+          :icon-anchor="map.staticAnchor"
+          class-name="someExtraClass"
+        >
+          <div class="headline">
+            Start
+          </div>
+        </l-icon>
+      </l-marker>
+      <l-marker :lat-lng="map.goal" v-if="map.goal.length > 0">
+        <l-icon
+          :icon-anchor="[16, 37]"
+          class-name="someExtraClass"
+        >
+          <div class="headline">
+            Goal
+          </div>
+        </l-icon>
+      </l-marker>
+      <l-polyline :lat-lngs="map.polyline.latlngs" :color="map.polyline.color"></l-polyline>
+    </l-map>
   </v-container>
 </template>
 <script>
   import { Plotly } from 'vue-plotly'
   import axios from 'axios'
+  import { LMap, LTileLayer, LMarker, LPolyline, LIcon } from 'vue2-leaflet';
   export default {
     name: "Session",
     components: {
-      Plotly
+      Plotly,
+      LMap,
+      LTileLayer,
+      LMarker,
+      LPolyline,
+      LIcon
     },
     data: () => ({
       data: [],
       movement: [],
       layout: {},
       sessionData: {},
+      isFinished: false,
+      map: {
+        center: [37.792480, -122.397450],
+        url: "http://mt0.google.com/vt/lyrs=m&hl=en&x={x}&y={y}&z={z}",
+        zoom: 17,
+        bounds: null,
+        polyline: {
+          latlngs: [],
+          color: 'green'
+        },
+        staticAnchor: [16, 37],
+        start: [],
+        goal: [],
+      },
       loading: true,
       timeoutId: null,
       displayed: false
@@ -73,7 +117,6 @@
       getMapData() {
         axios.get(this.$store.state.endpoints.mapData + `${this.$route.params.sessionId}/`)
           .then(res => {
-            console.log(res.data)
             let mapData = res.data;
             this.loading = false;
             this.data.push(
@@ -133,7 +176,6 @@
       getSessionData() {
         axios.get(this.$store.state.endpoints.sessionData + `${this.$route.params.sessionId}`)
           .then(res => {
-            console.log(res.data)
             this.sessionData = res.data;
             if (!this.loading && !this.displayed && this.sessionData.session.start != null) {
               let {goal, start} = this.sessionData.session;
@@ -163,6 +205,7 @@
             let movementLength = this.sessionData.movement.length;
             if (movementLength != 0) {
               if (this.sessionData.session.isFinished) {
+                this.isFinished = true;
                 let xAxis = [],
                     yAxis = [];
                 this.sessionData.movement.forEach((item) => {
@@ -180,6 +223,7 @@
                     symbol: 'star-diamond'
                   },
                 }]
+                this.getPositions();
               } else {
                 let point = this.sessionData.movement[movementLength-1]
                 this.movement.push({
@@ -209,6 +253,20 @@
               this.getSessionData();
             }, 5000)
           })
+      },
+      getPositions() {
+         axios.get(this.$store.state.endpoints.globalPosition + `${this.$route.params.sessionId}`)
+          .then(res => {
+            let length = res.data.globalPosition.length
+            this.map.start = [res.data.globalPosition[0].value[1], res.data.globalPosition[0].value[0]]
+            this.map.goal = [res.data.globalPosition[length-1].value[1], res.data.globalPosition[length-1].value[0]]
+            for(let i = 0; i < length; i++) {
+              this.map.polyline.latlngs.push([res.data.globalPosition[i].value[1], res.data.globalPosition[i].value[0]])
+            }
+          })
+          .catch(err => {
+            console.log(err)
+          })
       }
     },
     filters: {
@@ -230,3 +288,17 @@
     }
   }
 </script>
+
+<style>
+  .someExtraClass {
+    background-color: aqua;
+    padding: 10px;
+    border: 1px solid #333;
+    border-radius: 0 20px 20px 20px;
+    box-shadow: 5px 3px 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    width: auto !important;
+    height: auto !important;
+    margin: 0 !important;
+  }
+</style>
