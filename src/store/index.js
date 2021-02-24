@@ -10,7 +10,8 @@ export default new Vuex.Store({
       sessions: "/api/v1/sessions/",
       mapData: "/api/v1/session/",
       sessionData: "/api/v1/session-data/",
-      tableData: "/api/v1/table-data/"
+      tableData: "/api/v1/table-data/",
+      globalPosition: "/api/v1/global-positions/"
     },
     sessions: [],
   },
