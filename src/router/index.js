@@ -10,16 +10,16 @@ const routes = [
   {
     path: '/',
     component: DashboardLayout,
-    redirect: '/admin/overview'
+    redirect: '/admin/home'
   },
   {
     path: '/admin',
     component: DashboardLayout,
-    redirect: '/admin/overview',
+    redirect: '/admin/home',
     children: [
       {
-        path: 'overview',
-        name: 'Overview',
+        path: 'home',
+        name: 'Home',
         component: () => import("@/views/Home.vue"),
       },
       {
@@ -43,7 +43,7 @@ const routes = [
 ]
 
 export default new VueRouter({
-  // mode: 'history',
+  mode: 'history',
   routes, // short for routes: routes
   linkActiveClass: 'nav-item active',
   scrollBehavior: (to) => {

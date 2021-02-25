@@ -12,7 +12,7 @@
     <v-row v-if="!loading">
       <v-col>
         <v-card
-          elevation="3"
+          elevation="5"
           outlined
           shaped
           tile
@@ -22,7 +22,7 @@
       </v-col>
       <v-col>
         <v-card
-          elevation="3"
+          elevation="5"
           outlined
           shaped
           tile
@@ -55,13 +55,13 @@
       </v-col>
     </v-row>
     <v-card
-      elevation="3"
+      elevation="5"
       outlined
       shaped
       tile
       class="mt-3 mb-3"
     >
-      <l-map style="height: 600px" :zoom="map.zoom" :center="map.center" v-if="isFinished">
+      <l-map style="height: 600px" :zoom="map.zoom" :center="map.center" v-if="isFinished" ref="mymap">
         <l-tile-layer :url="map.url" subdomains="map.subdomains"></l-tile-layer>
         <l-marker :lat-lng="map.start" v-if="map.start.length > 0">
           <l-icon
@@ -91,6 +91,8 @@
 
 <script>
   import { Plotly } from 'vue-plotly'
+  import L from 'leaflet'
+  import 'leaflet-fullscreen/dist/Leaflet.fullscreen'
   import axios from 'axios'
   import { LMap, LTileLayer, LMarker, LPolyline, LIcon } from 'vue2-leaflet';
   export default {
@@ -287,6 +289,8 @@
             for(let i = 0; i < length; i++) {
               this.map.polyline.latlngs.push([res.data.globalPosition[i].value[1], res.data.globalPosition[i].value[0]])
             }
+            let map = this.$refs.mymap.mapObject;
+            map.addControl(new window.L.Control.Fullscreen());
           })
           .catch(err => {
             console.log(err)

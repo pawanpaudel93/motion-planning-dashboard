@@ -5,7 +5,7 @@
        :data-image="backgroundImage">
     <div class="sidebar-wrapper">
       <div class="logo">
-        <a href="#" class="simple-text logo__container">
+        <a href="/" class="simple-text logo__container">
             <div class="logo-img">
                 <img src="@/assets/logo.png" alt="">
             </div>

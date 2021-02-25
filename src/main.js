@@ -21,6 +21,7 @@ import axios from "axios";
 import vuetify from "@/plugins/vuetify";
 import VueProgressBar from 'vue-progressbar'
 import 'leaflet/dist/leaflet.css';
+import 'leaflet-fullscreen/dist/leaflet.fullscreen.css';
 
 // LightBootstrap plugin
 import LightBootstrap from './light-bootstrap-main'
