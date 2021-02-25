@@ -1,5 +1,20 @@
-import Vue from "vue";
-import App from "./App.vue";
+/*!
+
+ =========================================================
+ * Vue Light Bootstrap Dashboard - v2.0.0 (Bootstrap 4)
+ =========================================================
+
+ * Product Page: http://www.creative-tim.com/product/light-bootstrap-dashboard
+ * Copyright 2019 Creative Tim (http://www.creative-tim.com)
+ * Licensed under MIT (https://github.com/creativetimofficial/light-bootstrap-dashboard/blob/master/LICENSE.md)
+
+ =========================================================
+
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+ */
+import Vue from 'vue'
+import App from './App.vue'
 import router from "./router";
 import store from "./store";
 import axios from "axios";
@@ -7,7 +22,11 @@ import vuetify from "@/plugins/vuetify";
 import VueProgressBar from 'vue-progressbar'
 import 'leaflet/dist/leaflet.css';
 
-Vue.config.productionTip = false;
+// LightBootstrap plugin
+import LightBootstrap from './light-bootstrap-main'
+
+import './registerServiceWorker'
+
 // axios.defaults.baseURL = process.env.VUE_APP_BASEURL;
 axios.defaults.xsrfCookieName = 'csrftoken'
 axios.defaults.xsrfHeaderName = 'X-CSRFToken'
@@ -21,11 +40,14 @@ const options = {
     termination: 400
   },
 }
+
+Vue.use(LightBootstrap)
 Vue.use(VueProgressBar, options);
 
 new Vue({
+  el: '#app',
+  render: h => h(App),
   router,
   store,
-  vuetify,
-  render: h => h(App)
-}).$mount("#app");
+  vuetify
+})

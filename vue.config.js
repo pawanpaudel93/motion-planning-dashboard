@@ -1,9 +1,9 @@
 const BundleTracker = require("webpack-bundle-tracker");
+const webpack = require('webpack');
 
 // Change this to match the path to your files in production (could be S3, CloudFront, etc.)
 const DEPLOYMENT_PATH = "/static/dist";
 
-// for config you can visit https://cli.vuejs.org/config/
 module.exports = {
   publicPath:
     process.env.NODE_ENV === "production"
@@ -18,18 +18,29 @@ module.exports = {
     headers: {
       "Access-Control-Allow-Origin": "*"
     },
-    
   },
-
   // uncomment to remove eslint
-     chainWebpack: config => {
-       config.module.rules.delete('eslint');
+    chainWebpack: config => {
+      config.module.rules.delete('eslint');
   },
   configureWebpack: {
     plugins: [
-      new BundleTracker({ path: __dirname, filename: "webpack-stats.json" })
-    ]
+      new BundleTracker({ path: __dirname, filename: "webpack-stats.json" }),
+      new webpack.optimize.LimitChunkCountPlugin({
+        maxChunks: 6
+      })
+    ],
   },
-
-  transpileDependencies: ["vuetify"]
+  transpileDependencies: ["vuetify"],
+  pwa: {
+    name: 'PX4-AUTOPILOT',
+    themeColor: '#344675',
+    msTileColor: '#344675',
+    appleMobileWebAppCapable: 'yes',
+    appleMobileWebAppStatusBarStyle: '#344675'
+  },
+  css: {
+    // Enable CSS source maps.
+    sourceMap: process.env.NODE_ENV !== 'production'
+  }
 };
