@@ -1,99 +1,102 @@
 <template>
-  <v-container fluid>
-    <v-overlay :value="loading">
-      Loading...<br>
-      <v-progress-circular
-        :size="70"
-        :width="7"
-        color="blue"
-        indeterminate
-      ></v-progress-circular>
-    </v-overlay>
-    <v-row v-if="!loading">
-      <v-col>
-        <v-card
-          elevation="5"
-          outlined
-          shaped
-          tile
-        >
-          <Plotly :data="data.concat(movement)" :layout="layout" :display-mode-bar="true"></Plotly>
-        </v-card>
-      </v-col>
-      <v-col>
-        <v-card
-          elevation="5"
-          outlined
-          shaped
-          tile
-          v-if="Object.keys(sessionData).length !==0"
-        >
-          <v-simple-table>
-            <template v-slot:default>
-              <thead>
-                <tr>
-                  <th class="text-left">
-                    Name
-                  </th>
-                  <th class="text-left">
-                    Value
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  v-for="(value, key) in filteredSession"
-                  :key="key"
-                >
-                  <td>{{ key }}</td>
-                  <td :inner-html.prop="value|displayValue(key)"></td>
-                </tr>
-              </tbody>
-            </template>
-          </v-simple-table>
-        </v-card>
-      </v-col>
-    </v-row>
-    <v-card
-      elevation="5"
-      outlined
-      shaped
-      tile
-      class="mt-3 mb-3"
-    >
-      <l-map style="height: 600px" :zoom="map.zoom" :center="map.center" v-if="isFinished" ref="mymap">
-        <l-tile-layer :url="map.url" subdomains="map.subdomains"></l-tile-layer>
-        <l-marker :lat-lng="map.start" v-if="map.start.length > 0">
-          <l-icon
-            :icon-anchor="map.staticAnchor"
-            class-name="someExtraClass"
+  <div class="content">
+    <div class="container-fluid">
+      <v-overlay :value="loading">
+        Loading...<br>
+        <v-progress-circular
+          :size="70"
+          :width="7"
+          color="blue"
+          indeterminate
+        ></v-progress-circular>
+      </v-overlay>
+      <v-row v-if="!loading">
+        <v-col>
+          <v-card
+            elevation="5"
+            outlined
+            shaped
+            tile
           >
-            <div class="headline">
-              Start
-            </div>
-          </l-icon>
-        </l-marker>
-        <l-marker :lat-lng="map.goal" v-if="map.goal.length > 0">
-          <l-icon
-            :icon-anchor="[16, 37]"
-            class-name="someExtraClass"
+            <Plotly :data="data.concat(movement)" :layout="layout" :display-mode-bar="true"></Plotly>
+          </v-card>
+        </v-col>
+        <v-col>
+          <v-card
+            elevation="5"
+            outlined
+            shaped
+            tile
+            v-if="Object.keys(sessionData).length !==0"
           >
-            <div class="headline">
-              Goal
-            </div>
-          </l-icon>
-        </l-marker>
-        <l-polyline :lat-lngs="map.polyline.latlngs" :color="map.polyline.color"></l-polyline>
-      </l-map>
-    </v-card>
-  </v-container>
+            <v-simple-table>
+              <template v-slot:default>
+                <thead>
+                  <tr>
+                    <th class="text-left">
+                      Name
+                    </th>
+                    <th class="text-left">
+                      Value
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    v-for="(value, key) in filteredSession"
+                    :key="key"
+                  >
+                    <td>{{ key }}</td>
+                    <td :inner-html.prop="value|displayValue(key)"></td>
+                  </tr>
+                </tbody>
+              </template>
+            </v-simple-table>
+          </v-card>
+        </v-col>
+      </v-row>
+      <v-card
+        elevation="5"
+        outlined
+        shaped
+        tile
+        class="mt-3 mb-3"
+      >
+        <l-map style="height: 600px" :zoom="map.zoom" :center="map.center" v-if="isFinished" ref="mymap">
+          <l-tile-layer :url="map.url" subdomains="map.subdomains"></l-tile-layer>
+          <l-marker :lat-lng="map.start" v-if="map.start.length > 0">
+            <l-icon
+              :icon-anchor="map.staticAnchor"
+              class-name="someExtraClass"
+            >
+              <div class="headline">
+                Start
+              </div>
+            </l-icon>
+          </l-marker>
+          <l-marker :lat-lng="map.goal" v-if="map.goal.length > 0">
+            <l-icon
+              :icon-anchor="[16, 37]"
+              class-name="someExtraClass"
+            >
+              <div class="headline">
+                Goal
+              </div>
+            </l-icon>
+          </l-marker>
+          <l-polyline :lat-lngs="map.polyline.latlngs" :color="map.polyline.color"></l-polyline>
+        </l-map>
+      </v-card>
+    </div>
+  </div>
 </template>
 
 <script>
   import { Plotly } from 'vue-plotly'
-  import L from 'leaflet'
   import 'leaflet-fullscreen/dist/Leaflet.fullscreen'
   import axios from 'axios'
+  import 'leaflet/dist/leaflet.css';
+  import 'leaflet-fullscreen/dist/leaflet.fullscreen.css';
   import { LMap, LTileLayer, LMarker, LPolyline, LIcon } from 'vue2-leaflet';
   export default {
     name: "Session",

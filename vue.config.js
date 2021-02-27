@@ -1,4 +1,5 @@
 const BundleTracker = require("webpack-bundle-tracker");
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const webpack = require('webpack');
 
 // Change this to match the path to your files in production (could be S3, CloudFront, etc.)
@@ -28,7 +29,10 @@ module.exports = {
       new BundleTracker({ path: __dirname, filename: "webpack-stats.json" }),
       new webpack.optimize.LimitChunkCountPlugin({
         maxChunks: 6
-      })
+      }),
+      new MiniCssExtractPlugin({
+        ignoreOrder: true,
+      }),
     ],
   },
   transpileDependencies: ["vuetify"],

@@ -18,15 +18,9 @@ import App from './App.vue'
 import router from "./router";
 import store from "./store";
 import axios from "axios";
-import vuetify from "@/plugins/vuetify";
 import VueProgressBar from 'vue-progressbar'
-import 'leaflet/dist/leaflet.css';
-import 'leaflet-fullscreen/dist/leaflet.fullscreen.css';
-
-// LightBootstrap plugin
 import LightBootstrap from './light-bootstrap-main'
-
-import './registerServiceWorker'
+import vuetify from "@/plugins/vuetify";
 
 // axios.defaults.baseURL = process.env.VUE_APP_BASEURL;
 axios.defaults.xsrfCookieName = 'csrftoken'
@@ -42,7 +36,7 @@ const options = {
   },
 }
 
-Vue.use(LightBootstrap)
+Vue.use(LightBootstrap);
 Vue.use(VueProgressBar, options);
 
 new Vue({

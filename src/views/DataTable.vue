@@ -1,47 +1,49 @@
 <template>
-  <v-container fluid>
-    <v-card
-      elevation="3"
-      outlined
-      shaped
-      tile
-    >
-      <apexchart type="area" height="350" :options="getChartOptions('Local Position')" :series="seriesOne"></apexchart>
-    </v-card>
-    <br>
-    <v-card
-      elevation="3"
-      outlined
-      shaped
-      tile
-    >
-      <apexchart type="area" height="350" :options="getChartOptions('Local Velocity')" :series="seriesTwo"></apexchart>
-    </v-card>
-    <v-list-item v-for="(data, name) in filteredData" v-bind:key="name">
-      <v-list-item-content>
-        <v-card
-          elevation="6"
-          outlined
-          shaped
-          tile
-        >
-          <v-card-title>
-            {{name[0].toUpperCase() + name.slice(1)}}
-          </v-card-title>
-          <v-data-table
-            :headers="headers(name)"
-            :items="data"
-            item-key="name"
-            class="elevation-6"
+  <div class="content">
+    <div class="container-fluid">
+      <v-card
+        elevation="3"
+        outlined
+        shaped
+        tile
+      >
+        <apexchart type="area" height="350" :options="getChartOptions('Local Position')" :series="seriesOne"></apexchart>
+      </v-card>
+      <br>
+      <v-card
+        elevation="3"
+        outlined
+        shaped
+        tile
+      >
+        <apexchart type="area" height="350" :options="getChartOptions('Local Velocity')" :series="seriesTwo"></apexchart>
+      </v-card>
+      <v-list-item v-for="(data, name) in filteredData" v-bind:key="name">
+        <v-list-item-content>
+          <v-card
+            elevation="6"
+            outlined
+            shaped
+            tile
           >
-            <template v-slot:item.timestamp="{ item }">
-              <span>{{ new Date(parseInt(item.timestamp)).toGMTString() }}</span>
-            </template>
-          </v-data-table>
-        </v-card>
-      </v-list-item-content>
-    </v-list-item>
-  </v-container>
+            <v-card-title>
+              {{name[0].toUpperCase() + name.slice(1)}}
+            </v-card-title>
+            <v-data-table
+              :headers="headers(name)"
+              :items="data"
+              item-key="name"
+              class="elevation-6"
+            >
+              <template v-slot:item.timestamp="{ item }">
+                <span>{{ new Date(parseInt(item.timestamp)).toGMTString() }}</span>
+              </template>
+            </v-data-table>
+          </v-card>
+        </v-list-item-content>
+      </v-list-item>
+    </div>
+  </div>
 </template>
 
 <script>

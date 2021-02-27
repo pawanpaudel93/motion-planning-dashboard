@@ -1,5 +1,6 @@
 <template>
-  <v-container fluid>
+  <div class="content">
+    <div class="container-fluid">
       <v-row dense>
         <v-col
           v-for="(session, i) in sessions"
@@ -47,7 +48,8 @@
           </v-card>
         </v-col>
       </v-row>
-    </v-container>
+    </div>
+  </div>
 </template>
 
 <script>

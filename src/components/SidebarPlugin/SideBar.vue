@@ -55,7 +55,7 @@
       },
       backgroundImage: {
         type: String,
-        default: '/img/sidebar-5.jpg'
+        default: '/static/dist/img/sidebar-5.jpg'
       },
       activeColor: {
         type: String,
