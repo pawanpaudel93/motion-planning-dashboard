@@ -144,10 +144,10 @@ class SessionViewSet(ViewSet):
     def retrieve(self, request, pk=None):
         queryset = Session.objects.all()
         session = get_object_or_404(queryset, pk=pk)
-        serializer = SessionSerializer(session)
-        target_altitude = serializer.data.get('target_altitude')
+        target_altitude = session.target_altitude
+        safety_distance = session.safety_distance
         map_data = settings.MAP_DATA
-        grid, edges = create_grid_and_edges(map_data, target_altitude, 5)
+        grid, edges = create_grid_and_edges(map_data, target_altitude, safety_distance)
         return Response({'grid': grid, 'edges': edges})
 
 

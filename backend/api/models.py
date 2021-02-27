@@ -5,6 +5,7 @@ from django.utils.translation import gettext_lazy as _
 
 class Session(models.Model):
     target_altitude = models.IntegerField("Target Altitude")
+    safety_distance = models.IntegerField("Safety Distance", default=5)
     start = ArrayField(models.FloatField(), null=True)
     goal = ArrayField(models.FloatField(), null=True)
     is_finished = models.BooleanField("Is Finished", default=False)
