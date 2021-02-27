@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.admin.sites import AlreadyRegistered
 from backend.api.models import *
 from django.apps import apps
-admin.site.site_header = 'PX4-AUTOPILOT'
+admin.site.site_header = 'MPD'
 
 def auto_register(model):
     # Get all fields from model, but exclude autocreated reverse relations1=

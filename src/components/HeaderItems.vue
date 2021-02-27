@@ -14,7 +14,7 @@
       <div class="column">
         <router-link to="/">
           <figure class="image">
-            <img class="is-rounded" src="@/assets/avatar.jpg" />
+            <img class="is-rounded" src="@/assets/avatar.png" />
           </figure>
         </router-link>
       </div>
