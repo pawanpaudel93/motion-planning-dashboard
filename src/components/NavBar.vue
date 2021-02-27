@@ -10,7 +10,7 @@
         width="40"
       />
     </div>
-    <router-link :to="{name: 'Home'}"><v-toolbar-title class="white--text">PX4-AUTOPILOT</v-toolbar-title></router-link>
+    <router-link :to="{name: 'Home'}"><v-toolbar-title class="white--text">MPD</v-toolbar-title></router-link>
     <v-spacer></v-spacer>
 	</v-app-bar>
 </template>

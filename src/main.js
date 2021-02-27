@@ -5,7 +5,10 @@ import store from "./store";
 import axios from "axios";
 import vuetify from "@/plugins/vuetify";
 import VueProgressBar from 'vue-progressbar'
+import VueDashboard from 'vue-dashboard-vd';
+
 import 'leaflet/dist/leaflet.css';
+import 'bulma/css/bulma.min.css';
 
 Vue.config.productionTip = false;
 // axios.defaults.baseURL = process.env.VUE_APP_BASEURL;
@@ -22,6 +25,7 @@ const options = {
   },
 }
 Vue.use(VueProgressBar, options);
+Vue.use(VueDashboard);
 
 new Vue({
   router,
