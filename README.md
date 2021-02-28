@@ -1,4 +1,4 @@
-<p align="center"><img src="https://raw.githubusercontent.com/pawanpaudel93/motion-planning-dashboard/master/src/assets/logo.png?token=AC2JVREHJQGDA6LJWPCGVVDAHJ53I" alt="original" width="250" height="250"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/pawanpaudel93/motion-planning-dashboard/master/src/assets/logo.png" alt="original" width="250" height="250"></p>
 
 <h1 align="center">Welcome to Motion Planning Dashboard</h1>
 
@@ -20,6 +20,7 @@ It is a Django Vue Dashboard for the Udacity Motion Planning Simulation.
 a virtual environment and install django and django dependencies with it from the Pipfile.
 - And `npm install` to install all the vue dependencies from package.json
 - Run `python manage.py makemigrations && python manage.py migrate` to make and migrate the migrations to PostgreSQL database.
+- After this follow steps below for either local development or local deployment.
 
 ### Local Development
 - Then run `python manage.py runserver` to run the django development server.

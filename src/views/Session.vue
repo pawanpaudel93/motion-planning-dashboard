@@ -214,6 +214,7 @@
                   color: "#FF0000",
                   size: 10,
                 },
+                text: ['Start',],
                 type: 'scatter'
               })
               this.data.push({
@@ -225,6 +226,7 @@
                   size: 10,
                   symbol: 'x'
                 },
+                text: ['Goal',],
                 type: 'scatter'
               })
               this.displayed = true;
