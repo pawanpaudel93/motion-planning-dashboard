@@ -93,6 +93,7 @@
 
 <script>
   import { Plotly } from 'vue-plotly'
+  import L from 'leaflet';
   import 'leaflet-fullscreen/dist/Leaflet.fullscreen'
   import axios from 'axios'
   import 'leaflet/dist/leaflet.css';
@@ -216,6 +217,7 @@
                   color: "#FF0000",
                   size: 10,
                 },
+                text: ['Start'],
                 type: 'scatter'
               })
               this.data.push({
@@ -227,6 +229,7 @@
                   size: 10,
                   symbol: 'x'
                 },
+                text: ['Goal',],
                 type: 'scatter'
               })
               this.displayed = true;

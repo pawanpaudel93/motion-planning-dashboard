@@ -5,7 +5,8 @@
         <v-col
           v-for="(session, i) in sessions"
           :key="i"
-          cols="4"
+          sm="12"
+          md="4"
         >
           <v-card
             color="#952175"
@@ -13,38 +14,34 @@
             outlined
             dark
           >
-            <div class="d-flex flex-no-wrap justify-space-between">
-              <div>
-                <v-card-title
-                  class="headline"
-                  v-text="'Session '+ session.id"
-                >
-                </v-card-title>
+            <v-card-title
+              class="headline"
+              v-text="'Session '+ session.id"
+            >
+            </v-card-title>
 
-                <v-card-subtitle v-text="Date(session.created_at)"></v-card-subtitle>
+            <v-card-subtitle v-text="new Date(parseInt(session.created_at))"></v-card-subtitle>
 
-                <v-card-actions>
-                  <v-btn
-                    :to="'/session/' + session.id"
-                    class="ml-2 mt-5"
-                    outlined
-                    rounded
-                  >
-                    LIVE
-                  </v-btn>
-                  <v-btn
-                    :to="'/datatable/' + session.id"
-                    class="ml-2 mt-5"
-                    outlined
-                    rounded
-                  >
-                    DATATABLE
-                  </v-btn>
-                  <v-spacer></v-spacer>
-                  <v-btn text @click="deleteSession(session.id)"><v-icon>mdi-delete</v-icon></v-btn>
-                </v-card-actions>
-              </div>
-            </div>
+            <v-card-actions>
+              <v-btn
+                :to="'/session/' + session.id"
+                class="ml-2 mt-5"
+                outlined
+                rounded
+              >
+                LIVE
+              </v-btn>
+              <v-btn
+                :to="'/datatable/' + session.id"
+                class="ml-2 mt-5"
+                outlined
+                rounded
+              >
+                DATATABLE
+              </v-btn>
+              <v-spacer></v-spacer>
+              <v-btn text @click="deleteSession(session.id)"><v-icon>mdi-delete</v-icon></v-btn>
+            </v-card-actions>
           </v-card>
         </v-col>
       </v-row>
